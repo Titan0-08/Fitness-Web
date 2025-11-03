@@ -1,17 +1,29 @@
-from flask import Flask, render_template, request, redirect, url_for, session, jsonify
+from flask import Flask, render_template, request, redirect, url_for, session, jsonify, make_response
 import firebase_admin
 from firebase_admin import credentials, auth as firebase_auth, firestore
 from functools import wraps
 import datetime
 import requests
+import os
+import json
 
 app = Flask(__name__)
 app.secret_key = "9487790519b6cf89e08a6abf40fcdff6e"
 
-# ---------------- FIREBASE INIT ---------------- #
-import os
-import json
+# ---------------- CACHE CONTROL MIDDLEWARE ---------------- #
+@app.after_request
+def set_cache_headers(response):
+    """
+    Set cache control headers to prevent caching of authenticated pages.
+    This fixes the back button issue after logout.
+    """
+    # Apply to all responses
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    return response
 
+# ---------------- FIREBASE INIT ---------------- #
 # -------- Firebase initialization (Render + Local) --------
 cred_json = os.environ.get("FIREBASE_CREDENTIALS")
 
@@ -111,15 +123,18 @@ def track_user_view_internal(view_data, uid):
 # ---------------- ROUTES ---------------- #
 @app.route("/")
 def welcome():
-    return render_template("welcomepage.html")
+    response = make_response(render_template("welcomepage.html"))
+    return response
 
 @app.route("/login")
 def login():
-    return render_template("loginpage.html")
+    response = make_response(render_template("loginpage.html"))
+    return response
 
 @app.route("/register")
 def register():
-    return render_template("registerpage.html")
+    response = make_response(render_template("registerpage.html"))
+    return response
 
 # ---------------- SESSION LOGIN ---------------- #
 @app.route("/sessionLogin", methods=["POST"])
@@ -149,7 +164,8 @@ def session_login():
         session["email"] = user_data.get("email")
 
         print(f"✅ Session created for UID: {uid}, Role: {session['role']}")
-        return jsonify({"success": True})
+        response = jsonify({"success": True})
+        return response
 
     except Exception as e:
         print("❌ Token verification error:", e)
@@ -161,19 +177,27 @@ def logout():
     uid = session.get("uid")
     session.clear()
     print(f"✅ Logged out UID: {uid}")
-    return redirect(url_for("login"))
+    
+    # Create response and set no-cache headers explicitly for logout
+    response = redirect(url_for("login"))
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
+    return response
 
 # ---------------- USER DASHBOARD ---------------- #
 @app.route("/dashboard")
 @login_required(role="user")
 def dashboard():
-    return render_template("home.html", user=session)
+    response = make_response(render_template("home.html", user=session))
+    return response
 
 # ---------------- ADMIN DASHBOARD ---------------- #
 @app.route("/admin")
 @login_required(role="admin")
 def admin_dashboard():
-    return render_template("admindashboard.html", user=session)
+    response = make_response(render_template("admindashboard.html", user=session))
+    return response
 
 # ---------------- API ENDPOINT TO FETCH USER DATA ---------------- #
 @app.route("/api/user_data", methods=["GET"])
@@ -223,7 +247,8 @@ def user_profile():
             print(f"✅ Fetched user data for UID: {uid}")
             
             # Render the profile template with the user data
-            return render_template("userprofile.html", user_data=user_data)
+            response = make_response(render_template("userprofile.html", user_data=user_data))
+            return response
         else:
             print(f"❌ User document not found for UID: {uid}")
             return "User data not found.", 404
@@ -386,7 +411,8 @@ def clear_recent_views():
 @login_required()
 def recent_views():
     """Display the user's recently viewed blogs and recipes"""
-    return render_template("recent.html", user=session)
+    response = make_response(render_template("recent.html", user=session))
+    return response
 
 # ---------------- BLOG MANAGEMENT API ENDPOINTS ---------------- #
 @app.route("/api/blogs", methods=["GET"])
@@ -1026,88 +1052,105 @@ def debug_user_data():
 @app.route("/menu")
 @login_required()
 def menu():
-    return render_template("menu.html", user=session)
+    response = make_response(render_template("menu.html", user=session))
+    return response
 
 @app.route("/services")
 @login_required()
 def services():
-    return render_template("ourservices.html", user=session)
+    response = make_response(render_template("ourservices.html", user=session))
+    return response
 
 @app.route("/aboutus")
 @login_required()
 def aboutus():
-    return render_template("aboutus.html", user=session)
+    response = make_response(render_template("aboutus.html", user=session))
+    return response
 
 @app.route("/blog")
 @login_required()
 def blog():
-    return render_template("blog.html", user=session)
+    response = make_response(render_template("blog.html", user=session))
+    return response
 
 @app.route("/blogdisplay")
 @login_required()
 def blogdisplay():
-    return render_template("blogdisplay.html", user=session)
+    response = make_response(render_template("blogdisplay.html", user=session))
+    return response
 
 @app.route('/recipes')
 @login_required()
 def recipes():
-    return render_template('recipes.html')
+    response = make_response(render_template('recipes.html'))
+    return response
 
 @app.route("/recipe/<recipe_id>")
 @login_required()
 def recipe_detail(recipe_id):
-    return render_template("recipe_detail.html", user=session)
+    response = make_response(render_template("recipe_detail.html", user=session))
+    return response
 
 @app.route("/exercise-library")
 @login_required()
 def exercise_library():
-    return render_template("weightlifting.html", user=session)
+    response = make_response(render_template("weightlifting.html", user=session))
+    return response
 
 @app.route("/cross_fit")
 @login_required()
 def cross_fit():
-    return render_template("crossfit.html", user=session)
+    response = make_response(render_template("crossfit.html", user=session))
+    return response
 
 @app.route("/muscles_strength")
 @login_required()
 def muscles_strength():
-    return render_template("musclesstrength.html", user=session)
+    response = make_response(render_template("musclesstrength.html", user=session))
+    return response
 
 @app.route("/cardio_strength")
 @login_required()
 def cardio_strength():
-    return render_template("cardiostrength.html", user=session)
+    response = make_response(render_template("cardiostrength.html", user=session))
+    return response
 
 @app.route("/body_balance")
 @login_required()
 def body_balance():
-    return render_template("bodybalance.html", user=session)
+    response = make_response(render_template("bodybalance.html", user=session))
+    return response
 
 @app.route("/beginner_pilates")
 @login_required()
 def beginner_pilates():
-    return render_template("beginnerpilates.html", user=session)
+    response = make_response(render_template("beginnerpilates.html", user=session))
+    return response
 
 @app.route("/community")
 @login_required()
 def community():
-    return render_template("community.html", user=session)
+    response = make_response(render_template("community.html", user=session))
+    return response
 
 @app.route("/alter")
 @login_required()
 def alter():
-    return render_template("workoutrecommondation.html", user=session)
+    response = make_response(render_template("workoutrecommondation.html", user=session))
+    return response
 
 # ---------------- ADMIN CONTENT ---------------- #
 @app.route("/admin/content")
 @login_required(role="admin")
 def admin_content():
-    return render_template("adminblog.html", user=session)
+    response = make_response(render_template("adminblog.html", user=session))
+    return response
 
 @app.route("/admin/recipes")
 @login_required(role="admin")
 def admin_recipes():
-    return render_template("adminrecipes.html", user=session)
+    response = make_response(render_template("adminrecipes.html", user=session))
+    return response
 
 # ---------------- RUN ---------------- #
 if __name__ == "__main__":
