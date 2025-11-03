@@ -162,6 +162,7 @@ def session_login():
         session["uid"] = uid
         session["role"] = user_data.get("role", "user")
         session["email"] = user_data.get("email")
+        session["username"] = user_data.get("username", user_data.get("name", "User"))
 
         print(f"✅ Session created for UID: {uid}, Role: {session['role']}")
         response = jsonify({"success": True})
@@ -256,6 +257,36 @@ def user_profile():
     except Exception as e:
         print(f"❌ Error fetching user profile: {e}")
         return "An error occurred.", 500
+
+# ---------------- USER PROFILE API ENDPOINT ---------------- #
+@app.route("/api/user/profile", methods=["GET"])
+@login_required()
+def get_user_profile():
+    """Get current user's profile data for the community page"""
+    try:
+        uid = session.get("uid")
+        if not uid:
+            return jsonify({"success": False, "error": "User not logged in"}), 401
+
+        user_doc_ref = db.collection("users").document(uid)
+        user_doc = user_doc_ref.get()
+
+        if user_doc.exists:
+            user_data = user_doc.to_dict()
+            # Return user profile data for the community page
+            profile_data = {
+                "id": uid,
+                "name": user_data.get("name", user_data.get("username", "User")),
+                "email": user_data.get("email", ""),
+                "username": user_data.get("username", ""),
+                "role": user_data.get("role", "user")
+            }
+            return jsonify(profile_data)
+        else:
+            return jsonify({"success": False, "error": "User not found"}), 404
+    except Exception as e:
+        print(f"❌ Error fetching user profile: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
 
 # ---------------- RECENT VIEWS API ENDPOINTS ---------------- #
 @app.route("/api/user/track-view", methods=["POST"])
@@ -857,6 +888,7 @@ def create_group():
         members_ref.set({
             "userId": session.get("uid"),
             "userEmail": session.get("email"),
+            "userName": session.get("username", session.get("email")),
             "joinedAt": firestore.SERVER_TIMESTAMP
         })
         
@@ -916,12 +948,39 @@ def join_group(group_id):
         member_ref.set({
             "userId": session.get("uid"),
             "userEmail": session.get("email"),
+            "userName": session.get("username", session.get("email")),
             "joinedAt": firestore.SERVER_TIMESTAMP
         })
         
         return jsonify({"success": True, "message": "Joined group successfully"})
     except Exception as e:
         print(f"❌ Error joining group: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
+
+@app.route("/api/groups/<group_id>/exit", methods=["POST"])
+@login_required()
+def exit_group(group_id):
+    """Exit a community group"""
+    try:
+        group_ref = db.collection("groups").document(group_id)
+        group_doc = group_ref.get()
+        
+        if not group_doc.exists:
+            return jsonify({"success": False, "error": "Group not found"}), 404
+        
+        # Check if user is a member
+        member_ref = group_ref.collection("members").document(session.get("uid"))
+        member_doc = member_ref.get()
+        
+        if not member_doc.exists:
+            return jsonify({"success": False, "error": "Not a member of this group"}), 400
+        
+        # Remove user from members
+        member_ref.delete()
+        
+        return jsonify({"success": True, "message": "Successfully exited the group"})
+    except Exception as e:
+        print(f"❌ Error exiting group: {e}")
         return jsonify({"success": False, "error": str(e)}), 500
 
 @app.route("/api/groups/<group_id>/messages", methods=["GET"])
@@ -968,10 +1027,13 @@ def send_message(group_id):
         if not data or "content" not in data or not data["content"].strip():
             return jsonify({"success": False, "error": "Message content required"}), 400
         
+        # Get user's name for the message
+        user_name = session.get("username", session.get("email"))
+        
         # Add the message
         messages_ref = db.collection("groups").document(group_id).collection("messages")
         messages_ref.add({
-            "user": session.get("email"),
+            "user": user_name,
             "userId": session.get("uid"),
             "content": data["content"].strip(),
             "timestamp": firestore.SERVER_TIMESTAMP,
@@ -1156,3 +1218,10 @@ def admin_recipes():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=True)
+
+
+
+
+#git add .
+#git commit -m "Describe what you changed here"
+#git push

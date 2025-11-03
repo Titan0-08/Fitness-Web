@@ -251,6 +251,7 @@
             background: transparent;
             text-align: left;
             color: #d1d5db;
+            position: relative;
         }
 
         .group-item:hover {
@@ -291,6 +292,59 @@
         .group-members {
             font-size: 0.75rem;
             color: #9ca3af;
+        }
+
+        /* Group options menu */
+        .group-options {
+            position: absolute;
+            right: 0.5rem;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0;
+            transition: opacity 0.2s;
+        }
+
+        .group-item:hover .group-options {
+            opacity: 1;
+        }
+
+        .options-menu {
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background: #1f2937;
+            border: 1px solid #374151;
+            border-radius: 0.5rem;
+            padding: 0.5rem;
+            z-index: 10;
+            min-width: 120px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            width: 100%;
+            border: none;
+            background: transparent;
+            color: #d1d5db;
+            border-radius: 0.25rem;
+            cursor: pointer;
+            font-size: 0.875rem;
+        }
+
+        .menu-item:hover {
+            background: #374151;
+        }
+
+        .menu-item.exit {
+            color: #ef4444;
+        }
+
+        .menu-item.exit:hover {
+            background: #7f1d1d;
         }
 
         /* Main Content */
@@ -807,7 +861,7 @@
                     <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" 
                          alt="Alex Johnson" class="avatar">
                     <div>
-                        <div class="group-name">User</div>
+                        <div class="group-name" id="user-name">User</div>
                         <div class="group-members">Fitness Enthusiast</div>
                     </div>
                 </div>
@@ -963,17 +1017,55 @@
         </div>
     </div>
 
+    <!-- Exit Group Confirmation Modal -->
+    <div id="exit-modal" class="modal-overlay hidden">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Exit Group</h2>
+            </div>
+            <div class="form-group">
+                <p>Are you sure you want to exit this group? You will no longer have access to the group chat and content.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-outline" onclick="closeExitModal()">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirm-exit-btn" style="background: #ef4444;">Exit Group</button>
+            </div>
+        </div>
+    </div>
+
 <script>
     let currentCategory = 'All';
     let currentView = 'all';
     let selectedGroupId = null;
     let joinedGroups = [];
+    let currentUser = { name: "User", email: "user@example.com" };
+    let groupToExit = null;
 
     // Initialize the app
     async function init() {
+        await loadUserProfile();
         await renderGroups();
         await loadJoinedGroups();
         updateJoinedGroupsCount();
+    }
+
+    // Load user profile
+    async function loadUserProfile() {
+        try {
+            const response = await fetch("/api/user/profile", {
+                credentials: 'include'
+            });
+            
+            if (response.ok) {
+                const userData = await response.json();
+                currentUser = userData;
+                document.getElementById('user-name').textContent = userData.name || userData.username || 'User';
+            } else {
+                console.error("Failed to load user profile");
+            }
+        } catch (err) {
+            console.error("Error loading user profile:", err);
+        }
     }
 
     // Render groups grid
@@ -1045,13 +1137,22 @@
                     joinedContainer.innerHTML = '<div class="no-groups">You haven\'t joined any groups yet.</div>';
                 } else {
                     joinedContainer.innerHTML = joinedGroups.map(g => `
-                        <button class="group-item" onclick="showGroupChat('${g.id}')" data-group="${g.id}">
+                        <div class="group-item" data-group="${g.id}">
                             <div class="group-avatar">${g.name.charAt(0)}</div>
-                            <div class="group-info">
+                            <div class="group-info" onclick="showGroupChat('${g.id}')">
                                 <div class="group-name">${g.name}</div>
                                 <div class="group-members">${g.memberCount || 0} members</div>
                             </div>
-                        </button>
+                            <div class="group-options">
+                                <button class="btn btn-ghost" onclick="toggleGroupOptions('${g.id}', event)">⋯</button>
+                                <div id="options-${g.id}" class="options-menu hidden">
+                                    <button class="menu-item exit" onclick="openExitModal('${g.id}')">
+                                        <span>🚪</span>
+                                        Exit Group
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     `).join("");
                 }
                 
@@ -1065,6 +1166,74 @@
             console.error("Error loading joined groups:", err);
             document.getElementById("joined-groups").innerHTML = 
                 '<div class="error-message">Error loading your groups.</div>';
+        }
+    }
+
+    // Toggle group options menu
+    function toggleGroupOptions(groupId, event) {
+        event.stopPropagation();
+        const menu = document.getElementById(`options-${groupId}`);
+        const isHidden = menu.classList.contains('hidden');
+        
+        // Hide all other menus
+        document.querySelectorAll('.options-menu').forEach(m => {
+            if (m.id !== `options-${groupId}`) {
+                m.classList.add('hidden');
+            }
+        });
+        
+        // Toggle current menu
+        if (isHidden) {
+            menu.classList.remove('hidden');
+        } else {
+            menu.classList.add('hidden');
+        }
+    }
+
+    // Open exit group confirmation modal
+    function openExitModal(groupId) {
+        groupToExit = groupId;
+        document.getElementById('exit-modal').classList.remove('hidden');
+        
+        // Set up the confirm button
+        document.getElementById('confirm-exit-btn').onclick = () => exitGroup(groupId);
+    }
+
+    // Close exit group modal
+    function closeExitModal() {
+        document.getElementById('exit-modal').classList.add('hidden');
+        groupToExit = null;
+    }
+
+    // Exit a group
+    async function exitGroup(groupId) {
+        try {
+            const response = await fetch(`/api/groups/${groupId}/exit`, {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include'
+            });
+
+            const result = await response.json();
+            
+            if (response.ok && result.success) {
+                alert('Successfully exited the group!');
+                closeExitModal();
+                await loadJoinedGroups(); // Update joined groups
+                renderGroups(); // Refresh the list
+                
+                // If we're in the chat view for this group, go back to all groups
+                if (selectedGroupId === groupId) {
+                    showView('all');
+                }
+            } else {
+                alert(result.error || 'Error exiting group. Please try again.');
+            }
+        } catch (err) {
+            console.error("Error exiting group:", err);
+            alert('Error exiting group. Please try again.');
         }
     }
 
@@ -1092,6 +1261,11 @@
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
             button.classList.add('active');
         }
+        
+        // Hide all options menus when switching views
+        document.querySelectorAll('.options-menu').forEach(menu => {
+            menu.classList.add('hidden');
+        });
     }
 
     // Join a group
@@ -1186,8 +1360,6 @@
                 '<div class="error-message">Error loading messages.</div>';
         }
     }
-
-    
 
     // Render chat messages
     function renderMessages(messages) {
@@ -1318,6 +1490,13 @@
             alert('Error creating group. Please try again.');
         }
     }
+
+    // Close options menus when clicking outside
+    document.addEventListener('click', function() {
+        document.querySelectorAll('.options-menu').forEach(menu => {
+            menu.classList.add('hidden');
+        });
+    });
 
     // Initialize when page loads
     document.addEventListener('DOMContentLoaded', init);
