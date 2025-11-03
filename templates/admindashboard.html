@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .nav-item.active { background-color: rgb(31 41 55); }
+        #message-box {
+            display: none;
+            position: fixed;
+            top: 2rem;
+            right: 2rem;
+            z-index: 1000;
+        }
+    </style>
+</head>
+<body class="bg-gray-950 text-gray-100">
+
+<div class="flex flex-col md:flex-row min-h-screen">
+
+    <!-- Sidebar Navigation -->
+    <aside class="w-full md:w-64 bg-gray-900 border-r border-gray-800 p-6 md:p-8 flex flex-col justify-between h-screen">
+        <div class="flex flex-col items-center md:items-start space-y-4">
+            <h1 class="text-2xl md:text-3xl font-extrabold text-pink-500 mb-6">Admin Panel</h1>
+            <nav class="w-full">
+                <ul class="flex md:flex-col flex-wrap justify-center md:justify-start gap-2 text-sm md:text-base">
+                    <li>
+                        <a href="/admin" class="nav-item flex items-center space-x-3 p-3 rounded-xl hover:bg-gray-800 transition-colors duration-200 w-full text-left active">
+                            <!-- Dashboard Icon -->
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6-15v5a1 1 0 001 1h2a1 1 0 001-1v-5"></path>
+                            </svg>
+                            <span class="font-medium hidden md:inline">Dashboard</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="/admin/content" class="nav-item flex items-center space-x-3 p-3 rounded-xl hover:bg-gray-800 transition-colors duration-200 w-full text-left">
+                            <!-- Content Icon -->
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                            </svg>
+                            <span class="font-medium hidden md:inline">Content</span>
+                        </a>
+                    </li>
+                    <!-- New Recipes Button -->
+                    <li>
+                        <a href="/admin/recipes" class="nav-item flex items-center space-x-3 p-3 rounded-xl hover:bg-gray-800 transition-colors duration-200 w-full text-left">
+                            <!-- Recipe Icon -->
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                    d="M4 6h16M4 10h16M4 14h10m-6 4h6" />
+                            </svg>
+                            <span class="font-medium hidden md:inline">Recipes</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- Logout Button at the Bottom -->
+        <div class="mt-6 w-full">
+            <a href="/logout" class="flex items-center space-x-3 p-3 rounded-xl hover:bg-gray-800 transition-colors duration-200 w-full text-left">
+                <!-- Logout Icon -->
+                <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1m0-10V5"></path>
+                </svg>
+                <span class="font-medium hidden md:inline text-red-500">Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content Area -->
+    <main class="flex-1 p-6 md:p-10 overflow-auto">
+        <div class="grid grid-cols-1 gap-6 mb-8">
+            <div class="bg-gray-800 rounded-xl shadow-lg p-6">
+                <h2 class="text-lg font-semibold text-gray-400 mb-2">New Sign-ups</h2>
+                <p class="text-4xl font-extrabold text-green-500">12</p>
+            </div>
+        </div>
+        
+        <div class="bg-gray-800 rounded-xl shadow-lg p-6">
+            <h2 class="text-xl font-semibold mb-4">Recent Activities</h2>
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-700">
+                    <thead class="bg-gray-700">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Title</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Content</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">Date</th>
+                            <th class="px-6 py-3 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="posts-table-body" class="divide-y divide-gray-700"></tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+
+<div id="message-box" class="bg-gray-800 p-4 rounded-xl shadow-2xl transition-all duration-300 transform scale-95 opacity-0">
+    <p id="message-text" class="text-sm font-semibold"></p>
+</div>
+
+<script>
+    const posts = [
+        { id: '1', title: 'Welcome to the Admin Panel', content: 'This is a sample post.', timestamp: new Date().toISOString() },
+        { id: '2', title: 'Dashboard Features', content: 'Manage your content easily.', timestamp: new Date(Date.now() - 86400000).toISOString() },
+        { id: '3', title: 'System Update', content: 'New features added.', timestamp: new Date(Date.now() - 2 * 86400000).toISOString() }
+    ];
+
+    function showMessage(text, type) {
+        const messageBox = document.getElementById('message-box');
+        const messageText = document.getElementById('message-text');
+        messageText.textContent = text;
+        messageText.className = `text-sm font-semibold ${type === 'success' ? 'text-green-500' : 'text-red-500'}`;
+        messageBox.style.display = 'block';
+        setTimeout(() => { messageBox.style.transform = 'scale(1)'; messageBox.style.opacity = '1'; }, 10);
+        setTimeout(() => {
+            messageBox.style.transform = 'scale(0.95)'; messageBox.style.opacity = '0';
+            setTimeout(() => { messageBox.style.display = 'none'; }, 300);
+        }, 3000);
+    }
+
+    function renderPosts() {
+        const tableBody = document.getElementById('posts-table-body');
+        tableBody.innerHTML = '';
+        if (posts.length === 0) {
+            tableBody.innerHTML = `<tr><td colspan="4" class="px-6 py-4 text-center text-gray-500">No recent activities found.</td></tr>`;
+            return;
+        }
+        posts.forEach(post => {
+            const row = document.createElement('tr');
+            const postDate = new Date(post.timestamp).toLocaleDateString();
+            row.innerHTML = `
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">${post.title}</td>
+                <td class="px-6 py-4 text-sm text-gray-300">${post.content.substring(0, 50)}...</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">${postDate}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <button onclick="viewPost('${post.id}')" class="text-blue-500 hover:text-blue-700 transition-colors duration-200 mr-3">View</button>
+                    <button onclick="deletePost('${post.id}')" class="text-red-500 hover:text-red-700 transition-colors duration-200">Delete</button>
+                </td>
+            `;
+            tableBody.appendChild(row);
+        });
+    }
+
+    function viewPost(postId) {
+        const post = posts.find(p => p.id === postId);
+        if (post) showMessage(`Viewing: ${post.title}`, 'success');
+    }
+
+    function deletePost(postId) { showMessage('Delete functionality coming soon!', 'success'); }
+
+    document.addEventListener('DOMContentLoaded', renderPosts);
+</script>
+</body>
+</html>

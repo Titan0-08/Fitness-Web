@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gainz Fitness</title>
+    <!-- Use Tailwind CSS for rapid styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        /* Apply the Inter font to all elements */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* Hero section background with a dark overlay */
+        .hero-section {
+            background-image: url('https://images.unsplash.com/photo-1574680096145-d05b474e2155?q=80&w=1169&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'); /* Placeholder for your background image */
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        
+        .hero-overlay {
+            background-color: rgba(0, 0, 0, 0.6);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Custom CSS for the membership card images to maintain aspect ratio */
+        .card-image {
+            height: 200px; /* Fixed height for consistent card size */
+            object-fit: cover;
+            width: 100%;
+            border-top-left-radius: 0.5rem;
+            border-top-right-radius: 0.5rem;
+        }
+    </style>
+    
+<body class="bg-gray-900 text-white">
+
+    <!-- 
+        ===============================================================
+        HERO SECTION
+        ===============================================================
+    -->
+    <header class="hero-section min-h-screen flex items-center justify-center p-4">
+        <div class="hero-overlay"></div>
+        <div class="relative z-10 text-center max-w-2xl px-4">
+            <h1 class="text-5xl md:text-6xl font-extrabold leading-tight tracking-tight mb-4 uppercase">
+                Unleash Your Strength, Redefine Your Limits.
+            </h1>
+            <p class="text-xl md:text-2xl font-normal mb-8">
+                A 3-second window into the best part of your pitch. This text is meant to be a compelling statement.
+            </p>
+            <a href="/menu" id="join-membership-btn" class="inline-block bg-white text-black font-semibold py-3 px-8 rounded-full shadow-lg transition-transform transform hover:scale-105">
+                Join Membership
+            </a>
+        </div>
+        
+    </header>
+
+    <!-- 
+        ===============================================================
+        START HERE - SERVICE CARDS SECTION
+        ===============================================================
+    -->
+    <section class="bg-gray-900 py-16 px-4">
+        <div class="container mx-auto text-center">
+            <h2 class="text-4xl md:text-5xl font-extrabold uppercase mb-12">
+                Start Here
+            </h2>
+            <div class="flex flex-col md:flex-row justify-center items-center md:items-stretch gap-8">
+                <!-- Membership Card -->
+                <div class="bg-gray-800 rounded-xl shadow-xl w-full max-w-sm">
+                    <img src="https://placehold.co/400x300/3d3d3d/ffffff?text=Memberships" alt="Memberships" class="card-image rounded-t-xl">
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold mb-4">Memberships</h3>
+                        <a href="#" class="inline-block bg-white text-black font-semibold py-2 px-6 rounded-full transition-transform transform hover:scale-105" onclick="handleCardClick('Memberships')">
+                            Learn More
+                        </a>
+                    </div>
+                </div>
+                <!-- Personal Training Card -->
+                <div class="bg-gray-800 rounded-xl shadow-xl w-full max-w-sm">
+                    <img src="https://placehold.co/400x300/3d3d3d/ffffff?text=Personal+Training" alt="Personal Training" class="card-image rounded-t-xl">
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold mb-4">Personal Training</h3>
+                        <a href="#" class="inline-block bg-white text-black font-semibold py-2 px-6 rounded-full transition-transform transform hover:scale-105" onclick="handleCardClick('Personal Training')">
+                            Learn More
+                        </a>
+                    </div>
+                </div>
+                <!-- Classes Card -->
+                <div class="bg-gray-800 rounded-xl shadow-xl w-full max-w-sm">
+                    <img src="https://placehold.co/400x300/3d3d3d/ffffff?text=Classes" alt="Classes" class="card-image rounded-t-xl">
+                    <div class="p-6">
+                        <h3 class="text-2xl font-bold mb-4">Classes</h3>
+                        <a href="#" class="inline-block bg-white text-black font-semibold py-2 px-6 rounded-full transition-transform transform hover:scale-105" onclick="handleCardClick('Classes')">
+                            Learn More
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 
+        ===============================================================
+        FREE TRIAL SECTION
+        ===============================================================
+    -->
+    <section class="bg-gray-100 py-16 px-4 text-center">
+        <div class="container mx-auto">
+            <h2 class="text-3xl md:text-4xl font-extrabold text-black uppercase mb-4">
+                First time with GAINZ FITNESS?
+            </h2>
+            <h3 class="text-2xl md:text-3xl font-extrabold text-black uppercase mb-8">
+                Claim your FREE 7-day trial.
+            </h3>
+            <a href="/dashboard" id="free-trial-btn" class="inline-block bg-black text-white font-semibold py-3 px-8 rounded-full shadow-lg transition-transform transform hover:scale-105 mb-4">
+                Get it now!
+            </a>
+            <p class="text-gray-600 text-sm">No credit card required.</p>
+        </div>
+    </section>
+
+
+     <!-- ==========================
+        FOOTER (NEW)
+        ========================== -->
+    <footer id="contact" class="bg-gray-900 text-gray-400 py-12 px-4">
+        <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            <!-- Brand Info -->
+            <div class="md:col-span-1">
+                <div class="flex items-center space-x-2 mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-red-500" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2L2 22h20L12 2zm0 14L8 12h8l-4 4z"/>
+                    </svg>
+                    <span class="text-2xl font-bold text-white">FIT SMART</span>
+                </div>
+                <p class="text-sm">Your partner in fitness, providing expert workouts and nutrition plans to help you achieve your goals.</p>
+            </div>
+
+            <!-- Quick Links -->
+            <div>
+                <h3 class="text-lg font-semibold text-white mb-4">Quick Links</h3>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="#" class="hover:text-white transition-colors duration-200">Home</a></li>
+                    <li><a href="{{ url_for('aboutus') }}" class="hover:text-white transition-colors duration-200">About Us</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors duration-200">Services</a></li>
+                    <li><a href="{{ url_for('blog') }}" class="hover:text-white transition-colors duration-200">Blog</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors duration-200">Contact</a></li>
+                </ul>
+            </div>
+
+            <!-- Services -->
+            <div>
+                <h3 class="text-lg font-semibold text-white mb-4">Services</h3>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="#" class="hover:text-white transition-colors duration-200">Personal Training</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors duration-200">Nutrition Plans</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors duration-200">Group Classes</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors duration-200">Online Programs</a></li>
+                </ul>
+            </div>
+
+            <!-- Social Media -->
+            <div>
+                <h3 class="text-lg font-semibold text-white mb-4">Follow Us</h3>
+                <div class="flex space-x-4">
+                    <a href="#" class="hover:text-red-500 transition-colors duration-200">
+                        <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2.163c3.204 0 3.584.013 4.85.071 1.17.067 1.805.249 2.227.425.42.175.83.398 1.25.817.418.42.64.83.815 1.25.176.42.358 1.056.425 2.228.058 1.265.07 1.645.07 4.849v.05c0 3.204-.013 3.585-.07 4.85-.067 1.17-.249 1.805-.425 2.227-.175.42-.398.83-.817 1.25-.42.418-.83.64-1.25.815-.42.176-1.056.358-2.228.425-1.265.058-1.645.07-4.85.07h-.05c-3.204 0-3.585-.013-4.85-.07-1.17-.067-1.805-.249-2.227-.425-.42-.175-.83-.398-1.25-.817-.418-.42-.64-.83-.815-1.25-.176-.42-.358-1.056-.425-2.228-.058-1.265-.07-1.645-.07-4.85v-.05c0-3.204.013-3.585.07-4.85.067-1.17.249-1.805.425-2.227.175-.42.398-.83.817-1.25.42-.418.83-.64 1.25-.815.42-.176 1.056-.358 2.228-.425 1.265-.058 1.645-.07 4.85-.07h.05zm0-2.163h-.05c-3.264 0-3.66.012-4.945.07-1.238.067-2.012.26-2.617.502-.6.242-1.144.6-1.688 1.145-.54.544-.903 1.088-1.145 1.688-.242.605-.435 1.379-.502 2.617-.058 1.285-.07 1.681-.07 4.945v.05c0 3.264.012 3.66.07 4.945.067 1.238.26 2.012.502 2.617.242.6.6 1.144 1.145 1.688.54.544 1.088.903 1.688 1.145.605.242 1.379.435 2.617.502 1.285.058 1.681.07 4.945.07h.05c3.264 0 3.66-.012 4.945-.07 1.238-.067 2.012-.26 2.617-.502.6-.242 1.144-.6 1.688-1.145.54-.544.903-1.088 1.145-1.688.242-.605.435-1.379.502-2.617.058-1.285.07-1.681.07-4.945v-.05c0-3.264-.012-3.66-.07-4.945-.067-1.238-.26-2.012-.502-2.617-.242-.6-.6-1.144-1.145-1.688-.54-.544-1.088-.903-1.688-1.145-.605-.242-1.379-.435-2.617-.502-1.285-.058-1.681-.07-4.945-.07z"></path>
+                            <path d="M12 6.865a5.135 5.135 0 100 10.27 5.135 5.135 0 000-10.27zm0 8.27a3.135 3.135 0 110-6.27 3.135 3.135 0 010 6.27z"></path>
+                            <circle cx="16.815" cy="7.185" r="1.205"></circle>
+                        </svg>
+                    </a>
+                    <a href="#" class="hover:text-red-500 transition-colors duration-200">
+                        <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M14 11.236a2.236 2.236 0 11-4.472 0 2.236 2.236 0 014.472 0zM12 1a11 11 0 1011 11A11 11 0 0012 1zm0 20a9 9 0 119-9 9 9 0 01-9 9zM12 9a3 3 0 103 3 3 3 0 00-3-3z"></path>
+                        </svg>
+                    </a>
+                    <a href="#" class="hover:text-red-500 transition-colors duration-200">
+                        <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2.163c3.204 0 3.584.013 4.85.071 1.17.067 1.805.249 2.227.425.42.175.83.398 1.25.817.418.42.64.83.815 1.25.176.42.358 1.056.425 2.228.058 1.265.07 1.645.07 4.849v.05c0 3.204-.013 3.585-.07 4.85-.067 1.17-.249 1.805-.425 2.227-.175.42-.398.83-.817 1.25-.42.418-.83.64-1.25.815-.42.176-1.056.358-2.228.425-1.265.058-1.645.07-4.85.07h-.05c-3.204 0-3.585-.013-4.85-.07-1.17-.067-1.805-.249-2.227-.425-.42-.175-.83-.398-1.25-.817-.418-.42-.64-.83-.815-1.25-.176-.42-.358-1.056-.425-2.228-.058-1.265-.07-1.645-.07-4.85v-.05c0-3.204.013-3.585.07-4.85.067-1.17.249-1.805.425-2.227.175-.42.398-.83.817-1.25.42-.418.83-.64 1.25-.815.42-.176 1.056-.358 2.228-.425 1.265-.058 1.645-.07 4.85-.07h.05zm0-2.163h-.05c-3.264 0-3.66.012-4.945.07-1.238.067-2.012.26-2.617.502-.6.242-1.144.6-1.688 1.145-.54.544-.903 1.088-1.145 1.688-.242.605-.435 1.379-.502 2.617-.058 1.285-.07 1.681-.07 4.945v.05c0 3.264.012 3.66.07 4.945.067 1.238.26 2.012.502 2.617.242.6.6 1.144 1.145 1.688.54.544 1.088.903 1.688 1.145.605.242 1.379.435 2.617.502 1.285.058 1.681.07 4.945.07h.05c3.264 0 3.66-.012 4.945-.07 1.238-.067 2.012-.26 2.617-.502.6-.242 1.144-.6 1.688-1.145.54-.544.903-1.088 1.145-1.688.242-.605.435-1.379-.502-2.617-.058-1.285-.07-1.681-.07-4.945v-.05c0-3.264-.012-3.66-.07-4.945-.067-1.238-.26-2.012-.502-2.617-.242-.6-.6-1.144-1.145-1.688-.54-.544-1.088-.903-1.688-1.145-.605-.242-1.379-.435-2.617-.502-1.285-.058-1.681-.07-4.945-.07z"></path>
+                            <path d="M12 6.865a5.135 5.135 0 100 10.27 5.135 5.135 0 000-10.27zm0 8.27a3.135 3.135 0 110-6.27 3.135 3.135 0 010 6.27z"></path>
+                            <circle cx="16.815" cy="7.185" r="1.205"></circle>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Copyright & Bottom Text -->
+        <div class="mt-8 pt-8 border-t border-gray-700 text-center text-sm">
+            <p>&copy; 2024 FIT SMART. All Rights Reserved.</p>
+        </div>
+    </footer>   
+    
+
+    <!-- 
+        ===============================================================
+        JAVASCRIPT FOR INTERACTIVITY
+        ===============================================================
+    -->
+    <script>
+        // Get references to the buttons
+        const joinMembershipBtn = document.getElementById('join-membership-btn');
+        const freeTrialBtn = document.getElementById('free-trial-btn');
+
+        // Function to handle clicks on the main buttons
+        function handleButtonClick(buttonName) {
+            console.log(`The "${buttonName}" button was clicked!`);
+            // You can add more functionality here, like navigating to a new page or showing a modal.
+        }
+
+        // Attach click event listeners
+        joinMembershipBtn.addEventListener('click', () => {
+            handleButtonClick('Join Membership');
+        });
+
+        freeTrialBtn.addEventListener('click', () => {
+            handleButtonClick('Free 7-Day Trial');
+        });
+
+        // Function to handle clicks on the "Learn More" card links
+        function handleCardClick(serviceName) {
+            console.log(`Learn More about "${serviceName}" was clicked!`);
+            // Add your custom logic here for each service
+        }
+    </script>
+</body>
+</html>

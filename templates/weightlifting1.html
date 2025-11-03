@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitness Journey</title>
+    <!-- We're using the Inter font for a clean, modern look. -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap">
+    <!-- Tailwind CSS for utility-first styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Custom styling for the rounded corners and shadow effect */
+        .card-container {
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        .card-container:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+        }
+        .text-vertical {
+            writing-mode: vertical-lr;
+            text-orientation: upright;
+            transform: rotate(180deg);
+        }
+    </style>
+</head>
+<body class="bg-black text-white p-6 md:p-12">
+
+    <!-- Main Content Container -->
+    <div class="container mx-auto">
+        <!-- Top Section: Title and Subtitle -->
+        <div class="flex flex-col md:flex-row justify-between items-start mb-16">
+            <h1 class="text-4xl md:text-6xl font-extrabold leading-tight tracking-tight mb-4 md:mb-0">
+                Transform Your <br> Fitness Journey
+            </h1>
+            <p class="text-base md:text-lg max-w-xl text-gray-400">
+                Offers customized workout programs designed to help clients achieve their fitness goals, such as weight loss, strength and conditioning, and body shaping.
+            </p>
+        </div>
+
+        <!-- Cards Section: Dynamic Content -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <!-- Card for GYM -->
+            <div class="card-container bg-zinc-900 rounded-3xl overflow-hidden shadow-lg p-6 flex flex-col items-center">
+                <div class="w-full h-64 mb-4">
+                    <img src="https://placehold.co/800x600/18181b/ffffff?text=GYM+Image" alt="Gym" class="w-full h-full object-cover rounded-2xl shadow-xl">
+                </div>
+                <div class="w-full text-center">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-2">GYM</h2>
+                    <p class="text-sm md:text-base text-gray-400 max-w-xs mx-auto">
+                        We offer a wide range of state-of-the-art equipment and facilities to help you get in the best shape of your life.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Card for ZUMBA -->
+            <div class="card-container bg-zinc-900 rounded-3xl overflow-hidden shadow-lg p-6 flex flex-col items-center">
+                <div class="w-full h-64 mb-4">
+                    <img src="https://placehold.co/800x600/18181b/ffffff?text=ZUMBA+Image" alt="Zumba" class="w-full h-full object-cover rounded-2xl shadow-xl">
+                </div>
+                <div class="w-full text-center">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-2">ZUMBA</h2>
+                    <p class="text-sm md:text-base text-gray-400 max-w-xs mx-auto">
+                        High-energy dance fitness that combines Latin rhythms and easy-to-follow moves for a fun workout.
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Card for YOGA -->
+            <div class="card-container bg-zinc-900 rounded-3xl overflow-hidden shadow-lg p-6 flex flex-col items-center">
+                <div class="w-full h-64 mb-4">
+                    <img src="https://placehold.co/800x600/18181b/ffffff?text=YOGA+Image" alt="Yoga" class="w-full h-full object-cover rounded-2xl shadow-xl">
+                </div>
+                <div class="w-full text-center">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-2">YOGA</h2>
+                    <p class="text-sm md:text-base text-gray-400 max-w-xs mx-auto">
+                        Improve flexibility, strength, and mental clarity through a series of poses and breathing exercises.
+                    </p>
+                </div>
+            </div>
+
+            <!-- Card for MARTIAL ART -->
+            <div class="card-container bg-zinc-900 rounded-3xl overflow-hidden shadow-lg p-6 flex flex-col items-center">
+                <div class="w-full h-64 mb-4">
+                    <img src="https://placehold.co/800x600/18181b/ffffff?text=MARTIAL+ART+Image" alt="Martial Arts" class="w-full h-full object-cover rounded-2xl shadow-xl">
+                </div>
+                <div class="w-full text-center">
+                    <h2 class="text-3xl md:text-4xl font-bold mb-2">MARTIAL ART</h2>
+                    <p class="text-sm md:text-base text-gray-400 max-w-xs mx-auto">
+                        Learn discipline, self-defense, and build confidence with our professional martial arts instructors.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

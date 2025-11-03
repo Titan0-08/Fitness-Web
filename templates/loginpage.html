@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #2b2b40; }
+    .container-card { background-color: #3b3b55; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2); }
+  </style>
+</head>
+<body class="bg-[#2b2b40] flex items-center justify-center min-h-screen p-4">
+
+  <div class="container-card w-full max-w-lg rounded-3xl p-10 text-white">
+    <h1 class="text-4xl font-bold mb-6 text-center">Welcome Back</h1>
+    <p class="text-center text-gray-400 mb-8">Login to continue your fitness journey</p>
+
+    <form class="space-y-6" id="loginForm">
+      <div>
+        <input id="email" type="email" placeholder="Email"
+               class="w-full p-4 rounded-lg bg-[#4b4b66] border border-transparent focus:border-red-500 focus:outline-none transition-colors duration-300" required>
+      </div>
+
+      <div class="relative">
+        <input id="password" type="password" placeholder="Password"
+               class="w-full p-4 rounded-lg bg-[#4b4b66] border border-transparent focus:border-red-500 focus:outline-none transition-colors duration-300" required>
+        <!-- Forgot Password Link -->
+        <div class="mt-2 text-right">
+          <a href="#" id="forgotPasswordLink" class="text-sm text-red-400 hover:underline">Forgot Password?</a>
+        </div>
+      </div>
+
+      <button type="submit"
+              class="block w-full bg-red-500 text-white text-center py-3 rounded-md mt-4 hover:bg-red-600 transition">
+        Sign In
+      </button>
+    </form>
+
+    <p class="text-center text-gray-600 mt-4">
+      Don’t have an account?
+      <a href="/register" class="text-red-500 hover:underline">Create Account</a>
+    </p>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+    import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBMyLwUN2rLveu98uhyUCfLAC8QH___AqE",
+        authDomain: "final-1648d.firebaseapp.com",
+        projectId: "final-1648d",
+        storageBucket: "final-1648d.firebasestorage.app",
+        messagingSenderId: "305406887653",
+        appId: "1:305406887653:web:3ce30a3fe9c34c74bf360c"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const loginForm = document.getElementById("loginForm");
+
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        const user = userCredential.user;
+        console.log("✅ Firebase login successful:", user.uid);
+
+        const userDocRef = doc(db, "users", user.uid);
+        const userDocSnap = await getDoc(userDocRef);
+        if (!userDocSnap.exists()) {
+          alert("User data not found. Please contact support.");
+          return;
+        }
+
+        const userData = userDocSnap.data();
+        const idToken = await user.getIdToken();
+
+        const response = await fetch("/sessionLogin", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ idToken })
+        });
+
+        const result = await response.json();
+        if (!result.success) {
+          alert("Session login failed: " + result.error);
+          return;
+        }
+
+        if (userData.role === "admin") window.location.href = "/admin";
+        else window.location.href = "/dashboard";
+
+      } catch (error) {
+        console.error("❌ Login error:", error);
+        alert("Login failed: " + error.message);
+      }
+    });
+
+    // Forgot Password
+    const forgotPasswordLink = document.getElementById("forgotPasswordLink");
+    forgotPasswordLink.addEventListener("click", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value.trim();
+      if (!email) {
+        alert("⚠️ Please enter your email first.");
+        return;
+      }
+      try {
+        await sendPasswordResetEmail(auth, email);
+        alert("📧 Password reset link sent to your email!");
+      } catch (error) {
+        console.error("❌ Reset error:", error);
+        alert("Failed to send reset email: " + error.message);
+      }
+    });
+  </script>
+
+</body>
+</html>

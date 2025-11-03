@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Blog</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-black text-white">
+  <div class="container mx-auto p-6">
+   <a href="javascript:void(0);" onclick="history.back()" class="text-orange-500">&larr; Back</a>
+    <div id="blog-container" class="mt-6"></div>
+    <div id="loading" class="text-center py-6">Loading blog...</div>
+    <div id="error" class="hidden text-red-500 text-center py-6"></div>
+  </div>
+
+  <script>
+    async function fetchBlog() {
+      const params = new URLSearchParams(window.location.search);
+      const blogId = params.get("id");
+
+      if (!blogId) {
+        document.getElementById("error").textContent = "No blog ID provided.";
+        document.getElementById("error").classList.remove("hidden");
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/blog/${blogId}`);
+        const data = await res.json();
+
+        document.getElementById("loading").classList.add("hidden");
+
+        if (data.success) {
+          const blog = data.blog;
+          document.getElementById("blog-container").innerHTML = `
+            <h1 class="text-3xl font-bold mb-4">${blog.title}</h1>
+            <img src="${blog.image}" class="w-full max-h-96 object-cover mb-6 rounded-lg">
+            <p class="text-gray-400 text-sm mb-4">
+              By ${blog.author || "Unknown"} on ${new Date(blog.createdAt).toLocaleDateString()}
+            </p>
+            <div class="prose prose-invert max-w-none">${blog.content}</div>
+          `;
+          
+          // Track this blog view for the recent views feature
+          trackBlogView(blog);
+        } else {
+          document.getElementById("error").textContent = data.error;
+          document.getElementById("error").classList.remove("hidden");
+        }
+      } catch (err) {
+        document.getElementById("loading").classList.add("hidden");
+        document.getElementById("error").textContent = "Failed to load blog.";
+        document.getElementById("error").classList.remove("hidden");
+      }
+    }
+
+    // Function to track blog views for the recent views feature
+    async function trackBlogView(blog) {
+      try {
+        const viewData = {
+          type: 'blog',
+          id: blog.id,
+          title: blog.title,
+          description: blog.shortDesc || '',
+          image: blog.image,
+          url: window.location.pathname + window.location.search
+        };
+        
+        const response = await fetch('/api/user/track-view', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify(viewData)
+        });
+        
+        const data = await response.json();
+        if (!data.success) {
+          console.error('Failed to track blog view:', data.error);
+        }
+      } catch (error) {
+        console.error('Error tracking blog view:', error);
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", fetchBlog);
+  </script>
+</body>
+</html>

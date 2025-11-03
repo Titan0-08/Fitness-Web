@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitness & Gym News</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #121212;
+            color: #E0E0E0;
+        }
+        .hero {
+            background-image: url('https://images.unsplash.com/photo-1598215445086-8696099acb4b?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
+            background-size: cover;
+            background-position: center;
+        }
+        .recipe-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .recipe-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+    
+</head>
+<body class="antialiased">
+
+    <div class="min-h-screen flex flex-col items-center">
+        <!-- Navigation Header -->
+        <nav class="w-full bg-gray-900 p-4">
+            <div class="max-w-7xl mx-auto flex justify-between items-center">
+                <a href="/" class="text-xl font-bold text-orange-500">Fitness Hub</a>
+                <div class="space-x-4">
+                    <a href="/dashboard" class="text-gray-300 hover:text-white">Dashboard</a>
+                    <a href="/recipes" class="text-orange-500 font-semibold">Recipes</a>
+                    <a href="/blog" class="text-gray-300 hover:text-white">Blog</a>
+                    <a href="/services" class="text-gray-300 hover:text-white">Services</a>
+                </div>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <div class="hero w-full h-[40vh] md:h-[50vh] flex flex-col justify-center items-center text-center p-4 rounded-b-xl shadow-lg">
+            <h1 class="text-4xl md:text-6xl font-extrabold text-white leading-tight mb-2">
+                Fuel Your Life, Deliciously
+            </h1>
+            <p class="text-lg md:text-xl font-medium text-gray-200">
+                Your fitness tips, workouts, and more from certified trainers and experts.
+            </p>
+        </div>
+
+        <!-- Main Content Section -->
+        <main class="w-full max-w-7xl mx-auto p-6 md:p-12 space-y-12">
+            <a href="javascript:void(0);" onclick="history.back()" class="text-orange-500">&larr; Back</a>
+
+            <!-- Nutritious Recipes Section -->
+            <section id="recipes" class="bg-gray-800 p-6 md:p-8 rounded-2xl shadow-xl border border-gray-700">
+                <h2 class="text-3xl md:text-4xl font-bold text-orange-400 mb-6 text-center">Nutritious Recipes</h2>
+                <div id="recipes-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <!-- Recipe cards will be dynamically inserted here -->
+                </div>
+                <div id="loading-indicator" class="text-center text-orange-300 mt-8">
+                    <div class="flex justify-center items-center">
+                        <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-orange-500"></div>
+                        <span class="ml-3">Loading recipes...</span>
+                    </div>
+                </div>
+                <div id="empty-state" class="text-center text-gray-400 mt-8 hidden">
+                    <i class="fas fa-utensils text-5xl mb-4"></i>
+                    <p class="text-xl font-semibold">No recipes available yet</p>
+                    <p class="mt-2">Check back later for nutritious recipes!</p>
+                </div>
+                <div id="error-message" class="text-center text-red-500 mt-8 hidden">
+                    <p class="text-xl font-semibold mb-2">Error Loading Recipes</p>
+                    <p class="text-red-300 mb-4">Failed to fetch recipes. Please check your network connection.</p>
+                    <button id="retry-button" class="bg-orange-500 hover:bg-orange-600 text-white font-bold py-2 px-6 rounded-full transition-colors duration-300">
+                        Retry
+                    </button>
+                </div>
+            </section>
+
+        </main>
+    <!-- ==========================
+        FOOTER (NEW)
+        ========================== -->
+    <footer class="bg-gray-900 text-gray-400 py-12 px-4">
+        <div class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            <!-- Brand Info -->
+            <div class="md:col-span-1">
+                <div class="flex items-center space-x-2 mb-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-red-500" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2L2 22h20L12 2zm0 14L8 12h8l-4 4z"/>
+                    </svg>
+                    <span class="text-2xl font-bold text-white">FIT SMART</span>
+                </div>
+                <p class="text-sm">Your partner in fitness, providing expert workouts and nutrition plans to help you achieve your goals.</p>
+            </div>
+
+            <!-- Quick Links -->
+            <div>
+                <h3 class="text-lg font-semibold text-white mb-4">Quick Links</h3>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="#" class="hover:text-white transition-colors duration-200">Home</a></li>
+                    <li><a href="{{ url_for('aboutus') }}" class="hover:text-white transition-colors duration-200">About Us</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors duration-200">Services</a></li>
+                    <li><a href="{{ url_for('blog') }}" class="hover:text-white transition-colors duration-200">Blog</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors duration-200">Contact</a></li>
+                </ul>
+            </div>
+
+            <!-- Services -->
+            <div>
+                <h3 class="text-lg font-semibold text-white mb-4">Services</h3>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="#" class="hover:text-white transition-colors duration-200">Personal Training</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors duration-200">Nutrition Plans</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors duration-200">Group Classes</a></li>
+                    <li><a href="#" class="hover:text-white transition-colors duration-200">Online Programs</a></li>
+                </ul>
+            </div>
+
+            <!-- Social Media -->
+            <div>
+                <h3 class="text-lg font-semibold text-white mb-4">Follow Us</h3>
+                <div class="flex space-x-4">
+                    <a href="#" class="hover:text-red-500 transition-colors duration-200">
+                        <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2.163c3.204 0 3.584.013 4.85.071 1.17.067 1.805.249 2.227.425.42.175.83.398 1.25.817.418.42.64.83.815 1.25.176.42.358 1.056.425 2.228.058 1.265.07 1.645.07 4.849v.05c0 3.204-.013 3.585-.07 4.85-.067 1.17-.249 1.805-.425 2.227-.175.42-.398.83-.817 1.25-.42.418-.83.64-1.25.815-.42.176-1.056.358-2.228.425-1.265.058-1.645.07-4.85.07h-.05c-3.204 0-3.585-.013-4.85-.07-1.17-.067-1.805-.249-2.227-.425-.42-.175-.83-.398-1.25-.817-.418-.42-.64-.83-.815-1.25-.176-.42-.358-1.056-.425-2.228-.058-1.265-.07-1.645-.07-4.85v-.05c0-3.204.013-3.585.07-4.85.067-1.17.249-1.805.425-2.227.175-.42.398-.83.817-1.25.42-.418.83-.64 1.25-.815.42-.176 1.056-.358 2.228-.425 1.265-.058 1.645-.07 4.85-.07h.05zm0-2.163h-.05c-3.264 0-3.66.012-4.945.07-1.238.067-2.012.26-2.617.502-.6.242-1.144.6-1.688 1.145-.54.544-.903 1.088-1.145 1.688-.242.605-.435 1.379-.502 2.617-.058 1.285-.07 1.681-.07 4.945v.05c0 3.264.012 3.66.07 4.945.067 1.238.26 2.012.502 2.617.242.6.6 1.144 1.145 1.688.54.544 1.088.903 1.688 1.145.605.242 1.379.435 2.617.502 1.285.058 1.681.07 4.945.07h.05c3.264 0 3.66-.012 4.945-.07 1.238-.067 2.012-.26 2.617-.502.6-.242 1.144-.6 1.688-1.145.54-.544.903-1.088 1.145-1.688.242-.605.435-1.379.502-2.617.058-1.285.07-1.681.07-4.945v-.05c0-3.264-.012-3.66-.07-4.945-.067-1.238-.26-2.012-.502-2.617-.242-.6-.6-1.144-1.145-1.688-.54-.544-1.088-.903-1.688-1.145-.605-.242-1.379-.435-2.617-.502-1.285-.058-1.681-.07-4.945-.07z"></path>
+                            <path d="M12 6.865a5.135 5.135 0 100 10.27 5.135 5.135 0 000-10.27zm0 8.27a3.135 3.135 0 110-6.27 3.135 3.135 0 010 6.27z"></path>
+                            <circle cx="16.815" cy="7.185" r="1.205"></circle>
+                        </svg>
+                    </a>
+                    <a href="#" class="hover:text-red-500 transition-colors duration-200">
+                        <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M14 11.236a2.236 2.236 0 11-4.472 0 2.236 2.236 0 014.472 0zM12 1a11 11 0 1011 11A11 11 0 0012 1zm0 20a9 9 0 119-9 9 9 0 01-9 9zM12 9a3 3 0 103 3 3 3 0 00-3-3z"></path>
+                        </svg>
+                    </a>
+                    <a href="#" class="hover:text-red-500 transition-colors duration-200">
+                        <svg class="h-6 w-6" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M12 2.163c3.204 0 3.584.013 4.85.071 1.17.067 1.805.249 2.227.425.42.175.83.398 1.25.817.418.42.64.83.815 1.25.176.42.358 1.056.425 2.228.058 1.265.07 1.645.07 4.849v.05c0 3.204-.013 3.585-.07 4.85-.067 1.17-.249 1.805-.425 2.227-.175.42-.398.83-.817 1.25-.42.418-.83.64-1.25.815-.42.176-1.056.358-2.228.425-1.265.058-1.645.07-4.85.07h-.05c-3.204 0-3.585-.013-4.85-.07-1.17-.067-1.805-.249-2.227-.425-.42-.175-.83-.398-1.25-.817-.418-.42-.64-.83-.815-1.25-.176-.42-.358-1.056-.425-2.228-.058-1.265-.07-1.645-.07-4.85v-.05c0-3.204.013-3.585.07-4.85.067-1.17.249-1.805.425-2.227.175-.42.398-.83.817-1.25.42-.418.83-.64 1.25-.815.42-.176 1.056-.358 2.228-.425 1.265-.058 1.645-.07 4.85-.07h.05zm0-2.163h-.05c-3.264 0-3.66.012-4.945.07-1.238.067-2.012.26-2.617.502-.6.242-1.144.6-1.688 1.145-.54.544-.903 1.088-1.145 1.688-.242.605-.435 1.379-.502 2.617-.058 1.285-.07 1.681-.07 4.945v.05c0 3.264.012 3.66.07 4.945.067 1.238.26 2.012.502 2.617.242.6.6 1.144 1.145 1.688.54.544 1.088.903 1.688 1.145.605.242 1.379.435 2.617.502 1.285.058 1.681.07 4.945.07h.05c3.264 0 3.66-.012 4.945-.07 1.238-.067 2.012-.26 2.617-.502.6-.242 1.144-.6 1.688-1.145.54-.544.903-1.088 1.145-1.688.242-.605.435-1.379-.502-2.617-.058-1.285-.07-1.681-.07-4.945v-.05c0-3.264-.012-3.66-.07-4.945-.067-1.238-.26-2.012-.502-2.617-.242-.6-.6-1.144-1.145-1.688-.54-.544-1.088-.903-1.688-1.145-.605-.242-1.379-.435-2.617-.502-1.285-.058-1.681-.07-4.945-.07z"></path>
+                            <path d="M12 6.865a5.135 5.135 0 100 10.27 5.135 5.135 0 000-10.27zm0 8.27a3.135 3.135 0 110-6.27 3.135 3.135 0 010 6.27z"></path>
+                            <circle cx="16.815" cy="7.185" r="1.205"></circle>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Copyright & Bottom Text -->
+        <div class="mt-8 pt-8 border-t border-gray-700 text-center text-sm">
+            <p>&copy; 2024 FIT SMART. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const recipesContainer = document.getElementById('recipes-container');
+            const loadingIndicator = document.getElementById('loading-indicator');
+            const emptyState = document.getElementById('empty-state');
+            const errorMessage = document.getElementById('error-message');
+            const retryButton = document.getElementById('retry-button');
+
+            // Function to fetch recipes from your API
+            const fetchRecipes = async () => {
+                loadingIndicator.classList.remove('hidden');
+                recipesContainer.classList.add('hidden');
+                emptyState.classList.add('hidden');
+                errorMessage.classList.add('hidden');
+
+                try {
+                    console.log('Fetching recipes from /api/recipes...');
+                    const response = await fetch('/api/recipes');
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    
+                    const data = await response.json();
+                    console.log('Recipes API response:', data);
+                    
+                    if (data.success) {
+                        displayRecipes(data.recipes);
+                    } else {
+                        throw new Error(data.error || 'Failed to load recipes');
+                    }
+                } catch (error) {
+                    console.error('Error fetching recipes:', error);
+                    errorMessage.querySelector('p:last-child').textContent = error.message || 'Failed to fetch recipes. Please check your network connection.';
+                    errorMessage.classList.remove('hidden');
+                } finally {
+                    loadingIndicator.classList.add('hidden');
+                }
+            };
+
+            // Function to display recipes in the container
+            const displayRecipes = (recipes) => {
+                recipesContainer.innerHTML = '';
+                
+                // Check if recipes is valid
+                if (!recipes || !Array.isArray(recipes)) {
+                    console.error('Invalid recipes data:', recipes);
+                    emptyState.classList.remove('hidden');
+                    return;
+                }
+                
+                // Filter only published recipes
+                const publishedRecipes = recipes.filter(recipe => recipe.status === 'published');
+                
+                if (publishedRecipes.length === 0) {
+                    emptyState.classList.remove('hidden');
+                    return;
+                }
+                
+                publishedRecipes.forEach(recipe => {
+                    const recipeCard = document.createElement('div');
+                    recipeCard.className = 'recipe-card bg-gray-900 rounded-xl overflow-hidden shadow-lg';
+                    
+                    // Use default image if none provided
+                    const recipeImage = recipe.image || 'https://placehold.co/600x400/3d3d3d/ffffff?text=Recipe+Image';
+                    
+                    recipeCard.innerHTML = `
+                        <img src="${recipeImage}" alt="${recipe.title || 'Recipe'}" class="w-full h-48 object-cover">
+                        <div class="p-5">
+                            <h3 class="text-xl font-bold text-white mb-2">${recipe.title || 'Untitled Recipe'}</h3>
+                            <p class="text-gray-300 mb-4">${recipe.shortDesc || 'No description available'}</p>
+                            <div class="flex items-center justify-between text-sm text-gray-400 mb-4">
+                                ${recipe.prepTime ? `<span><i class="fas fa-clock mr-1"></i> ${recipe.prepTime}</span>` : ''}
+                                ${recipe.cookTime ? `<span><i class="fas fa-fire mr-1"></i> ${recipe.cookTime}</span>` : ''}
+                                ${recipe.servings ? `<span><i class="fas fa-users mr-1"></i> ${recipe.servings}</span>` : ''}
+                            </div>
+                            <div class="flex flex-wrap gap-2 mb-4">
+                                ${recipe.tags && Array.isArray(recipe.tags) && recipe.tags.length > 0 ? 
+                                    recipe.tags.map(tag => `<span class="bg-orange-500 text-white text-xs px-2 py-1 rounded-full">${tag}</span>`).join('') : 
+                                    ''}
+                            </div>
+                            <a href="/recipe/${recipe.id}" class="block text-center bg-orange-500 hover:bg-orange-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-300">
+                                View Recipe
+                            </a>
+                        </div>
+                    `;
+                    
+                    recipesContainer.appendChild(recipeCard);
+                });
+                
+                recipesContainer.classList.remove('hidden');
+            };
+
+            // Initial fetch on page load
+            fetchRecipes();
+
+            // Retry button functionality
+            retryButton.addEventListener('click', fetchRecipes);
+        });
+    </script>
+</body>
+</html>

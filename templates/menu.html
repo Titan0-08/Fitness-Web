@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fitness & Wellness</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+            <!-- Navigation Header -->
+    <!-- Navigation Header - Updated for Home Page -->
+    <nav class="w-full bg-gray-900 p-4">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <a href="/" class="text-xl font-bold text-orange-500">Fitness Hub</a>
+            <div class="space-x-4">
+                <a href="/dashboard" class="text-white hover:text-orange-500">Home</a>
+                <a href="/recipes" class="text-gray-300 hover:text-white">Recipes</a>
+                <a href="/blog" class="text-gray-300 hover:text-white">Blog</a>
+                <a href="/services" class="text-gray-300 hover:text-white">Services</a>
+            </div>
+        </div>
+    </nav>
+
+        <a href="/dashboard"  class="text-orange-500">&larr; Back</a>
+</head>
+<body class="bg-gray-950 text-gray-200 p-4 sm:p-8 md:p-12">
+
+    <!-- Main Grid Container -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6 max-w-7xl mx-auto">
+
+        <!-- Card 1: Weight Lifting -->
+        <div class="flex flex-col sm:flex-row bg-gray-900 rounded-xl overflow-hidden shadow-lg transform transition-transform duration-300 hover:scale-105">
+            <div class="flex-shrink-0 w-full sm:w-1/2 h-64 sm:h-auto overflow-hidden">
+                <img src="https://images.unsplash.com/photo-1704223523493-84c92ac51ad7?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDZ8fHxlbnwwfHx8fHw%3D" alt="A person weight lifting" class="w-full h-full object-cover">
+            </div>
+            <div class="p-6 flex flex-col justify-center">
+                <h2 class="text-2xl font-bold mb-2 text-white">WEIGHT LIFTING</h2>
+                <p class="text-gray-400 text-sm leading-relaxed mb-4">
+                    Quam elementum pulvinar etiam non quam lacus. Suspendisse faucibus interdum. Scelerisque varius morbi enim nunc faucibus a pellentesque.
+                </p>
+                <a href="{{ url_for('exercise_library') }}" class="inline-block self-start px-6 py-2 border-2 border-red-500 text-red-400 rounded-full hover:bg-red-600 hover:text-white transition-colors duration-300">
+                    LEARN MORE
+                </a>
+            </div>
+        </div>
+
+        <!-- Card 2: CrossFit -->
+        <div class="flex flex-col sm:flex-row bg-gray-900 rounded-xl overflow-hidden shadow-lg transform transition-transform duration-300 hover:scale-105">
+            <div class="flex-shrink-0 w-full sm:w-1/2 h-64 sm:h-auto overflow-hidden">
+                <img src="https://plus.unsplash.com/premium_photo-1664109999512-9f97c601f9c3?w=600&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1yZWxhdGVkfDEwfHx8ZW58MHx8fHx8" alt="People performing CrossFit" class="w-full h-full object-cover">
+            </div>
+            <div class="p-6 flex flex-col justify-center">
+                <h2 class="text-2xl font-bold mb-2 text-white">CROSSFIT</h2>
+                <p class="text-gray-400 text-sm leading-relaxed mb-4">
+                    Quam elementum pulvinar etiam non quam lacus. Suspendisse faucibus interdum. Scelerisque varius morbi enim nunc faucibus a pellentesque.
+                </p>
+                <a href="{{ url_for('cross_fit') }}" class="inline-block self-start px-6 py-2 border-2 border-red-500 text-red-400 rounded-full hover:bg-red-600 hover:text-white transition-colors duration-300">
+                    LEARN MORE
+                </a>
+            </div>
+        </div>
+        
+        <!-- Card 3: Muscles Strength -->
+        <div class="flex flex-col sm:flex-row-reverse bg-gray-900 rounded-xl overflow-hidden shadow-lg transform transition-transform duration-300 hover:scale-105">
+            <div class="flex-shrink-0 w-full sm:w-1/2 h-64 sm:h-auto overflow-hidden">
+                <img src="https://images.unsplash.com/photo-1683586861092-596182a95463?q=80&w=764&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Person doing pull-ups" class="w-full h-full object-cover">
+            </div>
+            <div class="p-6 flex flex-col justify-center">
+                <h2 class="text-2xl font-bold mb-2 text-white">MUSCLES STRENGTH</h2>
+                <p class="text-gray-400 text-sm leading-relaxed mb-4">
+                    Quam elementum pulvinar etiam non quam lacus. Suspendisse faucibus interdum. Scelerisque varius morbi enim nunc faucibus a pellentesque.
+                </p>
+                <a href="{{ url_for('muscles_strength') }}" class="inline-block self-start px-6 py-2 border-2 border-red-500 text-red-400 rounded-full hover:bg-red-600 hover:text-white transition-colors duration-300">
+                    LEARN MORE
+                </a>
+            </div>
+        </div>
+
+        <!-- Card 4: Cardio Strength -->
+        <div class="flex flex-col sm:flex-row-reverse bg-gray-900 rounded-xl overflow-hidden shadow-lg transform transition-transform duration-300 hover:scale-105">
+            <div class="flex-shrink-0 w-full sm:w-1/2 h-64 sm:h-auto overflow-hidden">
+                <img src="https://plus.unsplash.com/premium_photo-1664300911837-4e189f7d0884?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Someone on a treadmill" class="w-full h-full object-cover">
+            </div>
+            <div class="p-6 flex flex-col justify-center">
+                <h2 class="text-2xl font-bold mb-2 text-white">CARDIO STRENGTH</h2>
+                <p class="text-gray-400 text-sm leading-relaxed mb-4">
+                    Quam elementum pulvinar etiam non quam lacus. Suspendisse faucibus interdum. Scelerisque varius morbi enim nunc faucibus a pellentesque.
+                </p>
+                <a href="{{ url_for('cardio_strength') }}" class="inline-block self-start px-6 py-2 border-2 border-red-500 text-red-400 rounded-full hover:bg-red-600 hover:text-white transition-colors duration-300">
+                    LEARN MORE
+                </a>
+            </div>
+        </div>
+
+        <!-- Card 5: Body Balance -->
+        <div class="flex flex-col sm:flex-row bg-gray-900 rounded-xl overflow-hidden shadow-lg transform transition-transform duration-300 hover:scale-105">
+            <div class="flex-shrink-0 w-full sm:w-1/2 h-64 sm:h-auto overflow-hidden">
+                <img src="https://images.unsplash.com/photo-1606335567422-09b986cc47bb?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Person balancing on one leg" class="w-full h-full object-cover">
+            </div>
+            <div class="p-6 flex flex-col justify-center">
+                <h2 class="text-2xl font-bold mb-2 text-white">BODY BALANCE</h2>
+                <p class="text-gray-400 text-sm leading-relaxed mb-4">
+                    Quam elementum pulvinar etiam non quam lacus. Suspendisse faucibus interdum. Scelerisque varius morbi enim nunc faucibus a pellentesque.
+                </p>
+                <a href="{{ url_for('body_balance') }}" class="inline-block self-start px-6 py-2 border-2 border-red-500 text-red-400 rounded-full hover:bg-red-600 hover:text-white transition-colors duration-300">
+                    LEARN MORE
+                </a>
+            </div>
+        </div>
+
+        <!-- Card 6: Beginner Pilates -->
+        <div class="flex flex-col sm:flex-row bg-gray-900 rounded-xl overflow-hidden shadow-lg transform transition-transform duration-300 hover:scale-105">
+            <div class="flex-shrink-0 w-full sm:w-1/2 h-64 sm:h-auto overflow-hidden">
+                <img src="https://images.unsplash.com/photo-1717500251716-27057c48ace4?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Someone doing pilates" class="w-full h-full object-cover">
+            </div>
+            <div class="p-6 flex flex-col justify-center">
+                <h2 class="text-2xl font-bold mb-2 text-white">BEGINNER PILATES</h2>
+                <p class="text-gray-400 text-sm leading-relaxed mb-4">
+                    Quam elementum pulvinar etiam non quam lacus. Suspendisse faucibus interdum. Scelerisque varius morbi enim nunc faucibus a pellentesque.
+                </p>
+                <a href="{{ url_for('beginner_pilates') }}" class="inline-block self-start px-6 py-2 border-2 border-red-500 text-red-400 rounded-full hover:bg-red-600 hover:text-white transition-colors duration-300">
+                    LEARN MORE
+                </a>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // No JavaScript is needed for this static layout.
+    </script>
+</body>
+</html>

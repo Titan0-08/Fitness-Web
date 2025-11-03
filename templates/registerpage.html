@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fitness Registration</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #f5f5f5; }
+    .form-container { max-width: 800px; margin: 0 auto; }
+    .form-input {
+      width: 100%; padding: 12px; border: 1px solid #e5e7eb; border-radius: 8px;
+      background-color: #f9fafb; color: #1f2937; font-size: 1rem; outline: none;
+    }
+    .form-input:focus { border-color: #ef4444; }
+  </style>
+</head>
+<body class="bg-black text-white">
+
+  <!-- Hero Section -->
+  <div class="relative w-full h-80 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1599058917219-9b01f5b4bb92');">
+    <div class="absolute inset-0 bg-black bg-opacity-60 flex items-center justify-center">
+      <h1 class="text-white text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-wide">JOIN NOW</h1>
+    </div>
+  </div>
+
+  <!-- Form Section -->
+  <div class="bg-white p-8 md:p-12 lg:p-16 rounded-b-lg shadow-lg">
+    <div class="form-container">
+      <h2 class="text-center text-black text-2xl md:text-3xl font-bold mb-8">ENTER YOUR PERSONAL INFORMATION</h2>
+      
+      <form class="grid grid-cols-1 md:grid-cols-2 gap-6" id="registerForm">
+        <div><input type="text" id="first-name" placeholder="First Name" class="form-input" required></div>
+        <div><input type="text" id="last-name" placeholder="Last Name" class="form-input" required></div>
+        <div class="md:col-span-2"><input type="email" id="email" placeholder="Email Address" class="form-input" required></div>
+        <div class="md:col-span-2"><input type="password" id="password" placeholder="Password" class="form-input" required></div>
+        <div class="md:col-span-2"><input type="tel" id="phone" placeholder="Phone Number" class="form-input"></div>
+        <div><input type="text" id="city" placeholder="City" class="form-input"></div>
+        <div><input type="text" id="state" placeholder="State" class="form-input"></div>
+        <div><input type="text" id="zip" placeholder="Zip Code" class="form-input"></div>
+        <div><input type="text" id="birthday" placeholder="Birthday (MM/DD/YYYY)" class="form-input"></div>
+        <div><input type="text" id="gender" placeholder="Gender" class="form-input"></div>
+
+        <div class="md:col-span-2 mt-4">
+          <label class="flex items-start">
+            <input type="checkbox" id="terms" required class="mt-1 w-5 h-5 text-red-500 rounded border-gray-300 focus:ring-red-500">
+            <span class="ml-3 text-black text-sm font-bold">
+              I Agree to the Membership Terms and Conditions
+            </span>
+          </label>
+        </div>
+
+        <div class="md:col-span-2 mt-8">
+          <button type="submit" 
+                  class="w-full bg-red-500 text-white font-semibold py-4 rounded-md shadow-lg hover:bg-red-600 transition">
+            JOIN HEALTH & FITNESS
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Firebase -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyBMyLwUN2rLveu98uhyUCfLAC8QH___AqE",
+      authDomain: "final-1648d.firebaseapp.com",
+      projectId: "final-1648d",
+      storageBucket: "final-1648d.firebasestorage.app",
+      messagingSenderId: "305406887653",
+      appId: "1:305406887653:web:3ce30a3fe9c34c74bf360c"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+
+    const registerForm = document.getElementById("registerForm");
+    registerForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        const uid = userCredential.user.uid;
+
+        await setDoc(doc(db, "users", uid), {
+          email: email,
+          role: "user",
+          first_name: document.getElementById("first-name").value,
+          last_name: document.getElementById("last-name").value,
+          phone: document.getElementById("phone").value,
+          city: document.getElementById("city").value,
+          state: document.getElementById("state").value,
+          zip: document.getElementById("zip").value,
+          birthday: document.getElementById("birthday").value,
+          gender: document.getElementById("gender").value
+        });
+
+        alert("Account created successfully!");
+        window.location.href = "/dashboard";
+
+      } catch (error) {
+        console.error("❌ Registration error:", error.message);
+        alert("Signup failed: " + error.message);
+      }
+    });
+  </script>
+
+</body>
+</html>

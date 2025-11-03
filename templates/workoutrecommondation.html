@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workout Recommender</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
+    </style>
+</head>
+<body class="p-4 bg-gray-100 min-h-screen flex items-center justify-center">
+
+    <div class="max-w-4xl w-full bg-white rounded-xl shadow-lg p-6 md:p-10 transition-all duration-300">
+        <h1 class="text-3xl font-bold text-center text-gray-800 mb-2">Find Your Perfect Workout</h1>
+        <p class="text-center text-gray-600 mb-8">Select your preferences below to get personalized exercise recommendations.</p>
+
+        <!-- Form for user input -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div class="flex flex-col">
+                <label for="bodyPart" class="text-sm font-medium text-gray-700 mb-2">Body Part</label>
+                <select id="bodyPart" class="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
+                    <option value="" disabled selected>Select body part...</option>
+                </select>
+            </div>
+            <div class="flex flex-col">
+                <label for="level" class="text-sm font-medium text-gray-700 mb-2">Fitness Level</label>
+                <select id="level" class="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
+                    <option value="" disabled selected>Select level...</option>
+                </select>
+            </div>
+            <div class="flex flex-col">
+                <label for="equipment" class="text-sm font-medium text-gray-700 mb-2">Equipment</label>
+                <select id="equipment" class="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
+                    <option value="" disabled selected>Select equipment...</option>
+                </select>
+            </div>
+            <div class="flex flex-col">
+                <label for="type" class="text-sm font-medium text-gray-700 mb-2">Exercise Type</label>
+                <select id="type" class="p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition duration-200">
+                    <option value="" disabled selected>Select type...</option>
+                </select>
+            </div>
+        </div>
+
+        <button id="findWorkoutsBtn" class="w-full bg-blue-600 text-white font-semibold py-3 px-6 rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200">
+            Find Workouts
+        </button>
+
+        <!-- Loading spinner -->
+        <div id="loading" class="hidden flex justify-center items-center mt-8">
+            <svg class="animate-spin h-8 w-8 text-blue-600" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+        </div>
+
+        <!-- Results section -->
+        <div id="resultsContainer" class="mt-8 transition-all duration-300">
+            <!-- Results will be displayed here -->
+        </div>
+
+        <!-- Recent Searches Section -->
+        <div id="recentSearchesSection" class="mt-12">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-2xl font-bold text-gray-800">Recent Searches</h2>
+                <button id="clearRecentBtn" class="text-sm text-gray-500 hover:text-red-500 transition duration-200">Clear</button>
+            </div>
+            <div id="recentResultsContainer" class="flex flex-wrap gap-4">
+                <!-- Recent results will be displayed here -->
+            </div>
+        </div>
+
+        <!-- Message box for errors or no results -->
+        <div id="messageBox" class="hidden mt-8 p-4 text-center text-sm rounded-lg border-l-4 border-yellow-500 bg-yellow-50 text-yellow-800">
+            This is a message box.
+        </div>
+    </div>
+
+    <script>
+        const megaGymDataset = [
+            // Abdominals
+            { "Title": "Partner plank band row", "Desc": "An abdominal exercise where two partners perform single-arm planks while pulling on a resistance band.", "Type": "Strength", "BodyPart": "Abdominals", "Equipment": "Bands", "Level": "Intermediate" },
+            { "Title": "Ab wheel rollout", "Desc": "A challenging core exercise that uses an ab wheel to strengthen the abs and obliques.", "Type": "Strength", "BodyPart": "Abdominals", "Equipment": "Ab Wheel", "Level": "Expert" },
+            { "Title": "Cable crunch", "Desc": "A popular exercise using a cable machine to isolate the abdominal muscles for targeted strength training.", "Type": "Strength", "BodyPart": "Abdominals", "Equipment": "Cable", "Level": "Expert" },
+            { "Title": "Dumbbell side bend", "Desc": "An exercise that targets the obliques by using a dumbbell for added resistance.", "Type": "Strength", "BodyPart": "Abdominals", "Equipment": "Dumbbells", "Level": "Beginner" },
+            { "Title": "Hanging leg raise", "Desc": "An advanced bodyweight exercise for the lower abs and hip flexors.", "Type": "Strength", "BodyPart": "Abdominals", "Equipment": "None", "Level": "Expert" },
+            { "Title": "Plank jack", "Desc": "A cardio variation of the plank that involves moving the legs in and out for an added challenge.", "Type": "Cardio", "BodyPart": "Abdominals", "Equipment": "None", "Level": "Intermediate" },
+
+            // Back
+            { "Title": "Bent-over row", "Desc": "A classic compound movement for the back and biceps.", "Type": "Strength", "BodyPart": "Back", "Equipment": "Barbell", "Level": "Intermediate" },
+            { "Title": "Deadlift", "Desc": "A full-body compound exercise that works the entire posterior chain, including the lower back.", "Type": "Strength", "BodyPart": "Back", "Equipment": "Barbell", "Level": "Expert" },
+            { "Title": "Seated cable row", "Desc": "A great exercise for developing back thickness and strength.", "Type": "Strength", "BodyPart": "Back", "Equipment": "Cable", "Level": "Intermediate" },
+            { "Title": "Dumbbell row", "Desc": "A strength exercise that targets the lats and middle back.", "Type": "Strength", "BodyPart": "Back", "Equipment": "Dumbbells", "Level": "Beginner" },
+            { "Title": "Pull-ups", "Desc": "A highly effective bodyweight exercise for back and bicep strength.", "Type": "Strength", "BodyPart": "Back", "Equipment": "None", "Level": "Expert" },
+            { "Title": "Lat pulldown", "Desc": "A popular machine exercise that simulates a pull-up, focusing on the lats.", "Type": "Strength", "BodyPart": "Back", "Equipment": "Machine", "Level": "Intermediate" },
+
+            // Biceps
+            { "Title": "Barbell curl", "Desc": "A classic exercise for targeting the biceps.", "Type": "Strength", "BodyPart": "Biceps", "Equipment": "Barbell", "Level": "Intermediate" },
+            { "Title": "Dumbbell hammer curl", "Desc": "A variation of the bicep curl that works both the bicep and forearm muscles.", "Type": "Strength", "BodyPart": "Biceps", "Equipment": "Dumbbells", "Level": "Beginner" },
+            { "Title": "Concentration curl", "Desc": "An isolation exercise that puts all the focus on the biceps.", "Type": "Strength", "BodyPart": "Biceps", "Equipment": "Dumbbells", "Level": "Intermediate" },
+
+            // Calves
+            { "Title": "Standing calf raise", "Desc": "An exercise to build strength and size in the calf muscles.", "Type": "Strength", "BodyPart": "Calves", "Equipment": "None", "Level": "Beginner" },
+            { "Title": "Seated calf raise", "Desc": "A machine exercise that targets the soleus muscle of the calf.", "Type": "Strength", "BodyPart": "Calves", "Equipment": "Machine", "Level": "Intermediate" },
+            { "Title": "Dumbbell calf raise", "Desc": "A simple exercise using dumbbells for added resistance to target the calves.", "Type": "Strength", "BodyPart": "Calves", "Equipment": "Dumbbells", "Level": "Beginner" },
+            
+            // Chest
+            { "Title": "Barbell bench press", "Desc": "The cornerstone of chest exercises, targeting the pectorals, shoulders, and triceps.", "Type": "Strength", "BodyPart": "Chest", "Equipment": "Barbell", "Level": "Intermediate" },
+            { "Title": "Dumbbell fly", "Desc": "An isolation exercise that stretches and contracts the chest muscles.", "Type": "Strength", "BodyPart": "Chest", "Equipment": "Dumbbells", "Level": "Beginner" },
+            { "Title": "Push-up", "Desc": "A fundamental bodyweight exercise to build strength in the chest, shoulders, and triceps.", "Type": "Strength", "BodyPart": "Chest", "Equipment": "None", "Level": "Beginner" },
+            { "Title": "Chest fly machine", "Desc": "A machine exercise for isolating and strengthening the chest muscles.", "Type": "Strength", "BodyPart": "Chest", "Equipment": "Machine", "Level": "Intermediate" },
+            { "Title": "Cable chest press", "Desc": "A variation of the bench press that uses a cable machine for continuous tension.", "Type": "Strength", "BodyPart": "Chest", "Equipment": "Cable", "Level": "Expert" },
+
+            // Full Body
+            { "Title": "Burpees", "Desc": "A high-intensity, full-body exercise that combines a squat, push-up, and jump.", "Type": "Cardio", "BodyPart": "Full Body", "Equipment": "None", "Level": "Expert" },
+            { "Title": "Kettlebell swing", "Desc": "A powerful exercise that combines cardio and strength training for the posterior chain.", "Type": "Cardio", "BodyPart": "Full Body", "Equipment": "Kettlebells", "Level": "Intermediate" },
+            { "Title": "Jumping jacks", "Desc": "A classic cardio exercise that works the entire body.", "Type": "Cardio", "BodyPart": "Full Body", "Equipment": "None", "Level": "Beginner" },
+            { "Title": "Yoga: Sun Salutation", "Desc": "A series of poses for a full-body warmup or stretching session.", "Type": "Stretching", "BodyPart": "Full Body", "Equipment": "None", "Level": "Beginner" },
+            { "Title": "Burpees with dumbbells", "Desc": "A more challenging version of the burpee with added weight.", "Type": "Cardio", "BodyPart": "Full Body", "Equipment": "Dumbbells", "Level": "Expert" },
+
+            // Glutes
+            { "Title": "Glute bridge", "Desc": "A foundational exercise for glute strength and activation.", "Type": "Strength", "BodyPart": "Glutes", "Equipment": "None", "Level": "Beginner" },
+            { "Title": "Barbell hip thrust", "Desc": "A powerful compound exercise to build glute strength and size.", "Type": "Strength", "BodyPart": "Glutes", "Equipment": "Barbell", "Level": "Expert" },
+            { "Title": "Dumbbell lunges", "Desc": "A powerful unilateral exercise for the quadriceps and glutes.", "Type": "Strength", "BodyPart": "Glutes", "Equipment": "Dumbbells", "Level": "Intermediate" },
+            { "Title": "Cable pull-through", "Desc": "An exercise that focuses on the hip hinge and glute activation using a cable machine.", "Type": "Strength", "BodyPart": "Glutes", "Equipment": "Cable", "Level": "Intermediate" },
+            
+            // Hamstrings
+            { "Title": "Lying hamstring curl", "Desc": "An isolation exercise to target the hamstrings using a machine.", "Type": "Strength", "BodyPart": "Hamstrings", "Equipment": "Machine", "Level": "Intermediate" },
+            { "Title": "Stiff-leg deadlift", "Desc": "A deadlift variation that focuses on the hamstrings.", "Type": "Strength", "BodyPart": "Hamstrings", "Equipment": "Barbell", "Level": "Expert" },
+            { "Title": "Kettlebell single-leg deadlift", "Desc": "A unilateral exercise for the hamstrings, glutes, and core.", "Type": "Strength", "BodyPart": "Hamstrings", "Equipment": "Kettlebells", "Level": "Intermediate" },
+            
+            // Quadriceps
+            { "Title": "Barbell back squat", "Desc": "A foundational exercise for the lower body, targeting the quadriceps, hamstrings, and glutes.", "Type": "Strength", "BodyPart": "Quadriceps", "Equipment": "Barbell", "Level": "Expert" },
+            { "Title": "Leg press", "Desc": "A machine-based exercise for building leg strength and muscle mass.", "Type": "Strength", "BodyPart": "Quadriceps", "Equipment": "Machine", "Level": "Intermediate" },
+            { "Title": "Box jump", "Desc": "A plyometric exercise for explosive lower-body power.", "Type": "Plyometrics", "BodyPart": "Quadriceps", "Equipment": "Box", "Level": "Expert" },
+            { "Title": "Bodyweight squats", "Desc": "A basic exercise to strengthen the legs without any equipment.", "Type": "Strength", "BodyPart": "Quadriceps", "Equipment": "None", "Level": "Beginner" },
+
+            // Shoulders
+            { "Title": "Overhead press", "Desc": "A compound exercise for the shoulders and upper body.", "Type": "Strength", "BodyPart": "Shoulders", "Equipment": "Barbell", "Level": "Expert" },
+            { "Title": "Lateral raise", "Desc": "An isolation exercise for the medial head of the deltoids, using dumbbells.", "Type": "Strength", "BodyPart": "Shoulders", "Equipment": "Dumbbells", "Level": "Beginner" },
+            { "Title": "Cable face pull", "Desc": "A great exercise for strengthening the rear deltoids and improving posture.", "Type": "Strength", "BodyPart": "Shoulders", "Equipment": "Cable", "Level": "Intermediate" },
+            { "Title": "Kettlebell press", "Desc": "A shoulder press variation using a kettlebell for stability and strength.", "Type": "Strength", "BodyPart": "Shoulders", "Equipment": "Kettlebells", "Level": "Beginner" },
+
+            // Triceps
+            { "Title": "Dumbbell triceps extension", "Desc": "An isolation exercise for the triceps that can be done seated or standing.", "Type": "Strength", "BodyPart": "Triceps", "Equipment": "Dumbbells", "Level": "Beginner" },
+            { "Title": "Close-grip bench press", "Desc": "A variation of the bench press that targets the triceps more than the chest.", "Type": "Strength", "BodyPart": "Triceps", "Equipment": "Barbell", "Level": "Intermediate" },
+            { "Title": "Triceps dip", "Desc": "A bodyweight exercise for the triceps, chest, and shoulders.", "Type": "Strength", "BodyPart": "Triceps", "Equipment": "None", "Level": "Intermediate" },
+            { "Title": "Skullcrusher", "Desc": "An isolation exercise for the triceps that uses a barbell.", "Type": "Strength", "BodyPart": "Triceps", "Equipment": "Barbell", "Level": "Intermediate" }
+        ];
+
+        // --- UI Element References ---
+        const bodyPartSelect = document.getElementById('bodyPart');
+        const levelSelect = document.getElementById('level');
+        const equipmentSelect = document.getElementById('equipment');
+        const typeSelect = document.getElementById('type');
+        const findWorkoutsBtn = document.getElementById('findWorkoutsBtn');
+        const resultsContainer = document.getElementById('resultsContainer');
+        const loadingSpinner = document.getElementById('loading');
+        const messageBox = document.getElementById('messageBox');
+        const recentSearchesSection = document.getElementById('recentSearchesSection');
+        const recentResultsContainer = document.getElementById('recentResultsContainer');
+        const clearRecentBtn = document.getElementById('clearRecentBtn');
+
+        // --- Helper Functions ---
+        const showMessage = (message, type = 'info') => {
+            messageBox.textContent = message;
+            messageBox.style.display = 'block';
+            if (type === 'error') {
+                messageBox.classList.remove('border-yellow-500', 'bg-yellow-50', 'text-yellow-800');
+                messageBox.classList.add('border-red-500', 'bg-red-50', 'text-red-800');
+            } else {
+                messageBox.classList.remove('border-red-500', 'bg-red-50', 'text-red-800');
+                messageBox.classList.add('border-yellow-500', 'bg-yellow-50', 'text-yellow-800');
+            }
+        };
+
+        const hideMessage = () => {
+            messageBox.style.display = 'none';
+        };
+
+        const showLoading = () => {
+            loadingSpinner.style.display = 'flex';
+            resultsContainer.innerHTML = '';
+            hideMessage();
+        };
+
+        const hideLoading = () => {
+            loadingSpinner.style.display = 'none';
+        };
+
+        const renderWorkouts = (workouts, container) => {
+            if (workouts.length === 0) {
+                return '<p class="text-center text-gray-500">No workouts found for these selections.</p>';
+            }
+
+            return workouts.map(workout => `
+                <div class="bg-gray-50 rounded-lg p-6 shadow-sm mb-4">
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">${workout.Title}</h3>
+                    <p class="text-gray-600 mb-4">${workout.Desc || 'No description available.'}</p>
+                    <div class="flex flex-wrap gap-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full">${workout.BodyPart}</span>
+                        <span class="bg-purple-100 text-purple-800 text-xs font-medium px-2.5 py-0.5 rounded-full">${workout.Equipment}</span>
+                        <span class="bg-green-100 text-green-800 text-xs font-medium px-2.5 py-0.5 rounded-full">${workout.Level}</span>
+                        <span class="bg-pink-100 text-pink-800 text-xs font-medium px-2.5 py-0.5 rounded-full">${workout.Type}</span>
+                    </div>
+                </div>
+            `).join('');
+        };
+
+        const displayWorkouts = (workouts) => {
+            hideLoading();
+            resultsContainer.innerHTML = renderWorkouts(workouts, resultsContainer);
+        };
+
+        // --- Recent Searches Logic ---
+        const RECENT_SEARCHES_KEY = 'recentWorkouts';
+        const MAX_RECENT_SEARCHES = 5;
+
+        // This function saves a new search query to localStorage.
+        const saveRecentSearch = (searchData) => {
+            // Get existing searches from localStorage or create an empty array
+            let recentSearches = JSON.parse(localStorage.getItem(RECENT_SEARCHES_KEY)) || [];
+            
+            // Check if the search is a duplicate to avoid adding it again
+            const isDuplicate = recentSearches.some(search => 
+                search.BodyPart === searchData.BodyPart && 
+                search.Level === searchData.Level &&
+                search.Equipment === searchData.Equipment &&
+                search.Type === searchData.Type
+            );
+
+            if (!isDuplicate) {
+                // Add the new search to the beginning of the array
+                recentSearches.unshift(searchData);
+                // Keep only the most recent searches (up to MAX_RECENT_SEARCHES)
+                if (recentSearches.length > MAX_RECENT_SEARCHES) {
+                    recentSearches = recentSearches.slice(0, MAX_RECENT_SEARCHES);
+                }
+                // Save the updated array back to localStorage
+                localStorage.setItem(RECENT_SEARCHES_KEY, JSON.stringify(recentSearches));
+            }
+        };
+        
+        // This function loads and displays the recent searches from localStorage.
+        const loadRecentSearches = () => {
+            const recentSearches = JSON.parse(localStorage.getItem(RECENT_SEARCHES_KEY)) || [];
+            if (recentSearches.length > 0) {
+                recentSearchesSection.style.display = 'block';
+                recentResultsContainer.innerHTML = recentSearches.map(search => `
+                    <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200 transition-transform duration-200 transform hover:scale-105 cursor-pointer" 
+                         data-bodypart="${search.BodyPart}" 
+                         data-level="${search.Level}" 
+                         data-equipment="${search.Equipment}" 
+                         data-type="${search.Type}">
+                        <h4 class="font-bold text-lg mb-2 text-gray-800">${search.BodyPart} - ${search.Level}</h4>
+                        <div class="flex flex-wrap gap-2 text-sm text-gray-600">
+                            <span><strong class="font-medium">Equipment:</strong> ${search.Equipment}</span>
+                            <span><strong class="font-medium">Type:</strong> ${search.Type}</span>
+                        </div>
+                    </div>
+                `).join('');
+
+                // Add click listeners to recent search cards
+                document.querySelectorAll('#recentResultsContainer > div').forEach(card => {
+                    card.addEventListener('click', () => {
+                        const bodyPart = card.getAttribute('data-bodypart');
+                        const level = card.getAttribute('data-level');
+                        const equipment = card.getAttribute('data-equipment');
+                        const type = card.getAttribute('data-type');
+                        
+                        bodyPartSelect.value = bodyPart;
+                        levelSelect.value = level;
+                        equipmentSelect.value = equipment;
+                        typeSelect.value = type;
+
+                        // Trigger a search with the selected values
+                        findWorkoutsBtn.click();
+                    });
+                });
+            } else {
+                recentSearchesSection.style.display = 'block';
+                recentResultsContainer.innerHTML = `<p class="text-center text-gray-500">Your recent searches will appear here!</p>`;
+            }
+        };
+
+        const clearRecentSearches = () => {
+            localStorage.removeItem(RECENT_SEARCHES_KEY);
+            loadRecentSearches();
+        };
+
+        clearRecentBtn.addEventListener('click', clearRecentSearches);
+
+        // --- Main Logic ---
+        
+        // Function to get unique values from the dataset for a given key
+        const getUniqueValues = (data, key) => {
+            const values = data.map(item => item[key]).filter(Boolean);
+            return [...new Set(values)].sort();
+        };
+
+        // Function to populate dropdowns with unique values from the dataset
+        const populateDropdowns = () => {
+            const bodyParts = getUniqueValues(megaGymDataset, 'BodyPart');
+            const levels = getUniqueValues(megaGymDataset, 'Level');
+            const equipment = getUniqueValues(megaGymDataset, 'Equipment');
+            const types = getUniqueValues(megaGymDataset, 'Type');
+
+            bodyParts.forEach(value => {
+                const option = document.createElement('option');
+                option.value = value;
+                option.textContent = value;
+                bodyPartSelect.appendChild(option);
+            });
+
+            levels.forEach(value => {
+                const option = document.createElement('option');
+                option.value = value;
+                option.textContent = value;
+                levelSelect.appendChild(option);
+            });
+
+            equipment.forEach(value => {
+                const option = document.createElement('option');
+                option.value = value;
+                option.textContent = value;
+                equipmentSelect.appendChild(option);
+            });
+
+            types.forEach(value => {
+                const option = document.createElement('option');
+                option.value = value;
+                option.textContent = value;
+                typeSelect.appendChild(option);
+            });
+        };
+
+        // Event listener for the "Find Workouts" button
+        findWorkoutsBtn.addEventListener('click', () => {
+            const selectedBodyPart = bodyPartSelect.value;
+            const selectedLevel = levelSelect.value;
+            const selectedEquipment = equipmentSelect.value;
+            const selectedType = typeSelect.value;
+
+            if (!selectedBodyPart || !selectedLevel || !selectedEquipment || !selectedType) {
+                showMessage('Please select all fields to find workouts.', 'error');
+                return;
+            }
+
+            showLoading();
+
+            setTimeout(() => { // Simulate a network delay
+                const filteredWorkouts = megaGymDataset.filter(workout =>
+                    workout.BodyPart === selectedBodyPart &&
+                    workout.Level === selectedLevel &&
+                    workout.Equipment === selectedEquipment &&
+                    workout.Type === selectedType
+                );
+                
+                // Save the search query if workouts are found
+                if (filteredWorkouts.length > 0) {
+                    saveRecentSearch({
+                        BodyPart: selectedBodyPart,
+                        Level: selectedLevel,
+                        Equipment: selectedEquipment,
+                        Type: selectedType
+                    });
+                }
+                
+                displayWorkouts(filteredWorkouts);
+                loadRecentSearches(); // Refresh the recent searches section
+            }, 700);
+        });
+
+        // Initialize dropdowns and load recent searches on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            populateDropdowns();
+            loadRecentSearches();
+        });
+    </script>
+</body>
+</html>

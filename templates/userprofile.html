@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile</title>
+    <style>
+        body { font-family: sans-serif; background-color: #000000; margin: 0; padding: 2rem; }
+        .profile-container { max-width: 600px; margin: auto; background: white; padding: 2rem; border-radius: 8px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
+        h1 { text-align: center; color: #333; margin-bottom: 1.5rem; }
+        .profile-detail { display: flex; justify-content: space-between; align-items: center; padding: 0.75rem 0; border-bottom: 1px solid #eee; }
+        .profile-detail:last-child { border-bottom: none; }
+        .profile-label { font-weight: bold; color: #555; }
+        .profile-value { color: #777; }
+        .edit-link { display: block; text-align: right; margin-top: 1.5rem; }
+    </style>
+        <a href="javascript:void(0);" onclick="history.back()" class="text-orange-500">&larr; Back</a>
+</head>
+<body>
+    <div class="profile-container">
+        <h1>User Profile</h1>
+        
+        {% if user_data %}
+            <div class="profile-detail">
+                <span class="profile-label">First Name:</span>
+                <span class="profile-value">{{ user_data.get('first_name', 'N/A') }}</span>
+            </div>
+            <div class="profile-detail">
+                <span class="profile-label">Last Name:</span>
+                <span class="profile-value">{{ user_data.get('last_name', 'N/A') }}</span>
+            </div>
+            <div class="profile-detail">
+                <span class="profile-label">Email ID:</span>
+                <span class="profile-value">{{ user_data.get('email', 'N/A') }}</span>
+            </div>
+            <div class="profile-detail">
+                <span class="profile-label">Phone Number:</span>
+                <span class="profile-value">{{ user_data.get('phone', 'N/A') }}</span>
+            </div>
+            <div class="profile-detail">
+                <span class="profile-label">City:</span>
+                <span class="profile-value">{{ user_data.get('city', 'N/A') }}</span>
+            </div>
+            <div class="profile-detail">
+                <span class="profile-label">State:</span>
+                <span class="profile-value">{{ user_data.get('state', 'N/A') }}</span>
+            </div>
+            <div class="profile-detail">
+                <span class="profile-label">Birthday:</span>
+                <span class="profile-value">{{ user_data.get('birthday', 'N/A') }}</span>
+            </div>
+            <div class="profile-detail">
+                <span class="profile-label">Gender:</span>
+                <span class="profile-value">{{ user_data.get('gender', 'N/A') }}</span>
+            </div>
+            
+            <a href="#" class="edit-link">Edit Profile</a>
+        {% else %}
+            <p>User data could not be loaded.</p>
+        {% endif %}
+        
+    </div>
+</body>
+</html>

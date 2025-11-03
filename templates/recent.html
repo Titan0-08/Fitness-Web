@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recent Views - FIT SMART</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; overflow-x: hidden; }
+        .icon { width: 24px; height: 24px; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+        
+        /* Card hover effect */
+        .card-hover-effect {
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        .card-hover-effect:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        /* Tab styling */
+        .tab-active {
+            border-bottom: 3px solid #f43f5e;
+            color: #f43f5e;
+        }
+        
+        /* Loading animation */
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #f43f5e;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="bg-black text-white min-h-screen">
+
+    <!-- Header -->
+    <header class="sticky top-0 left-0 w-full z-10 py-6 px-6 lg:px-16 bg-black bg-opacity-90">
+        <nav class="flex justify-between items-center">
+            <!-- Logo -->
+            <div class="flex items-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-red-500" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2L2 22h20L12 2zm0 14L8 12h8l-4 4z"/>
+                </svg>
+                <span class="text-3xl font-bold">FIT SMART</span>
+            </div>
+            <!-- Nav Links -->
+            <ul class="hidden lg:flex items-center space-x-8 font-medium">
+                <li><a href="/" class="hover:text-red-500">HOME</a></li>
+                <li><a href="/aboutus" class="hover:text-red-500">ABOUT</a></li>
+                <li><a href="/services" class="hover:text-red-500">SERVICES</a></li>
+                <li><a href="/blog" class="hover:text-red-500">BLOG</a></li>
+                <li><a href="/recipes" class="hover:text-red-500">RECIPES</a></li>
+                <li><a href="/community" class="hover:text-red-500">COMMUNITY</a></li>
+            </ul>
+            <!-- Back Button -->
+            <a href="/" class="bg-red-500 px-4 py-2 rounded-md font-semibold hover:bg-red-600 transition-colors">
+                Back to Home
+            </a>
+        </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-4 py-12">
+        <div class="text-center mb-12">
+            <h1 class="text-4xl md:text-5xl font-extrabold mb-4">Your <span class="text-red-500">Viewing History</span></h1>
+            <p class="text-gray-400 max-w-2xl mx-auto">Track the blogs and recipes you've recently viewed. Your history is private and only visible to you.</p>
+        </div>
+
+        <!-- Tabs -->
+        <div class="flex justify-center mb-8 border-b border-gray-700">
+            <button id="blogs-tab" class="tab-active px-6 py-3 font-semibold text-lg">Blogs</button>
+            <button id="recipes-tab" class="px-6 py-3 font-semibold text-lg text-gray-400">Recipes</button>
+            <button id="clear-all-btn" class="ml-auto px-4 py-2 text-sm bg-gray-700 hover:bg-gray-600 rounded-md">
+                Clear All History
+            </button>
+        </div>
+
+        <!-- Loading State -->
+        <div id="loading-state" class="text-center py-16">
+            <div class="loading-spinner mb-4"></div>
+            <p class="text-gray-400">Loading your viewing history...</p>
+        </div>
+
+        <!-- Content Sections -->
+        <div id="blogs-section" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Blog views will be dynamically inserted here -->
+        </div>
+
+        <div id="recipes-section" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Recipe views will be dynamically inserted here -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="empty-state" class="hidden text-center py-16">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-gray-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <h3 class="text-2xl font-semibold text-gray-400 mb-2">No viewing history yet</h3>
+            <p class="text-gray-500 mb-6">Your viewed blogs and recipes will appear here</p>
+            <a href="/blog" class="bg-red-500 px-6 py-3 rounded-md font-semibold hover:bg-red-600 inline-block mr-4">Explore Blogs</a>
+            <a href="/recipes" class="border border-gray-600 px-6 py-3 rounded-md font-semibold hover:bg-gray-800 inline-block">Browse Recipes</a>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-gray-400 py-12 px-4 mt-12">
+        <div class="max-w-6xl mx-auto text-center">
+            <p>&copy; 2024 FIT SMART. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Tab functionality
+        const blogsTab = document.getElementById('blogs-tab');
+        const recipesTab = document.getElementById('recipes-tab');
+        const blogsSection = document.getElementById('blogs-section');
+        const recipesSection = document.getElementById('recipes-section');
+        const emptyState = document.getElementById('empty-state');
+        const loadingState = document.getElementById('loading-state');
+        const clearAllBtn = document.getElementById('clear-all-btn');
+
+        blogsTab.addEventListener('click', () => {
+            blogsTab.classList.add('tab-active');
+            blogsTab.classList.remove('text-gray-400');
+            recipesTab.classList.remove('tab-active');
+            recipesTab.classList.add('text-gray-400');
+            blogsSection.classList.remove('hidden');
+            recipesSection.classList.add('hidden');
+        });
+
+        recipesTab.addEventListener('click', () => {
+            recipesTab.classList.add('tab-active');
+            recipesTab.classList.remove('text-gray-400');
+            blogsTab.classList.remove('tab-active');
+            blogsTab.classList.add('text-gray-400');
+            recipesSection.classList.remove('hidden');
+            blogsSection.classList.add('hidden');
+        });
+
+        // Clear all history
+        clearAllBtn.addEventListener('click', async () => {
+            if (confirm("Are you sure you want to clear all your viewing history?")) {
+                try {
+                    const response = await fetch('/api/user/clear-recent-views', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        // Clear the UI
+                        document.getElementById('blogs-section').innerHTML = '';
+                        document.getElementById('recipes-section').innerHTML = '';
+                        showEmptyState();
+                    } else {
+                        alert('Failed to clear history: ' + data.error);
+                    }
+                } catch (error) {
+                    console.error('Error clearing history:', error);
+                    alert('Failed to clear history');
+                }
+            }
+        });
+
+        // Function to fetch user's recent views from the server
+        async function fetchRecentViews() {
+            try {
+                showLoadingState();
+                
+                const response = await fetch('/api/user/recent-views');
+                
+                if (!response.ok) {
+                    throw new Error('Failed to fetch recent views');
+                }
+                
+                const data = await response.json();
+                console.log('Recent views data:', data); // Debug log
+                
+                // Handle both response formats (recent_views and recentViews)
+                const views = data.recent_views || data.recentViews || [];
+                
+                if (data.success) {
+                    displayRecentViews(views);
+                } else {
+                    console.error('Error:', data.error);
+                    showEmptyState();
+                }
+            } catch (error) {
+                console.error('Error fetching recent views:', error);
+                showEmptyState();
+            }
+        }
+
+        // Function to normalize view data (handle different field names)
+        function normalizeViewData(view) {
+            return {
+                id: view.id || view.viewId || '',
+                type: view.type || view.viewType || '',
+                title: view.title || '',
+                description: view.description || view.desc || '',
+                image: view.image || view.img || '',
+                url: view.url || view.link || '',
+                viewedAt: view.viewedAt || view.timestamp || view.date || ''
+            };
+        }
+
+        // Function to display recent views
+        function displayRecentViews(views) {
+            hideLoadingState();
+            
+            const blogsContainer = document.getElementById('blogs-section');
+            const recipesContainer = document.getElementById('recipes-section');
+            
+            // Clear existing content
+            blogsContainer.innerHTML = '';
+            recipesContainer.innerHTML = '';
+            
+            // Normalize and separate blogs and recipes
+            const normalizedViews = views.map(normalizeViewData);
+            const blogViews = normalizedViews.filter(view => view.type === 'blog');
+            const recipeViews = normalizedViews.filter(view => view.type === 'recipe');
+            
+            console.log('Blog views:', blogViews); // Debug log
+            console.log('Recipe views:', recipeViews); // Debug log
+            
+            // Display blogs
+            if (blogViews.length > 0) {
+                blogViews.forEach(view => {
+                    const blogCard = createViewCard(view);
+                    blogsContainer.appendChild(blogCard);
+                });
+                blogsSection.classList.remove('hidden');
+            }
+            
+            // Display recipes
+            if (recipeViews.length > 0) {
+                recipeViews.forEach(view => {
+                    const recipeCard = createViewCard(view);
+                    recipesContainer.appendChild(recipeCard);
+                });
+                recipesSection.classList.remove('hidden');
+                
+                // Show recipes tab if there are recipes but no blogs
+                if (blogViews.length === 0) {
+                    recipesTab.click();
+                }
+            }
+            
+            // Show empty state if no views
+            if (views.length === 0) {
+                showEmptyState();
+            } else {
+                emptyState.classList.add('hidden');
+            }
+        }
+
+        // Function to create a view card
+        function createViewCard(view) {
+            const card = document.createElement('div');
+            card.className = 'bg-gray-800 rounded-xl overflow-hidden card-hover-effect';
+            
+            // Handle different date formats
+            let formattedDate = 'Unknown date';
+            if (view.viewedAt) {
+                try {
+                    const viewDate = new Date(view.viewedAt);
+                    formattedDate = viewDate.toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'short',
+                        day: 'numeric'
+                    });
+                } catch (e) {
+                    console.error('Error formatting date:', e);
+                }
+            }
+            
+            card.innerHTML = `
+                <img src="${view.image || 'https://placehold.co/600x400/3d3d3d/ffffff?text=No+Image'}" 
+                     alt="${view.title}" 
+                     class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <span class="text-xs text-gray-400 uppercase">${formattedDate}</span>
+                    <h3 class="text-xl font-semibold mt-1 mb-2">${view.title || 'Untitled'}</h3>
+                    <p class="text-gray-400 text-sm mb-4 line-clamp-2">${view.description || 'No description available'}</p>
+                    <div class="flex justify-between items-center">
+                        <a href="${view.url || '#'}" class="text-red-500 font-medium hover:text-red-400">View ${view.type}</a>
+                        <button class="text-xs text-gray-500 hover:text-gray-300 remove-view" data-id="${view.id}" data-type="${view.type}">
+                            Remove
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            // Add event listener for remove button
+            const removeBtn = card.querySelector('.remove-view');
+            removeBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                removeViewItem(view.id, view.type);
+            });
+            
+            return card;
+        }
+
+        // Function to remove a single view item
+        async function removeViewItem(viewId, viewType) {
+            try {
+                const response = await fetch('/api/user/remove-recent-view', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ viewId, viewType })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    // Refresh the view
+                    fetchRecentViews();
+                } else {
+                    alert('Failed to remove item: ' + data.error);
+                }
+            } catch (error) {
+                console.error('Error removing view item:', error);
+                alert('Failed to remove item');
+            }
+        }
+
+        // Function to show empty state
+        function showEmptyState() {
+            hideLoadingState();
+            emptyState.classList.remove('hidden');
+            blogsSection.classList.add('hidden');
+            recipesSection.classList.add('hidden');
+        }
+
+        // Function to show loading state
+        function showLoadingState() {
+            loadingState.classList.remove('hidden');
+            emptyState.classList.add('hidden');
+            blogsSection.classList.add('hidden');
+            recipesSection.classList.add('hidden');
+        }
+
+        // Function to hide loading state
+        function hideLoadingState() {
+            loadingState.classList.add('hidden');
+        }
+
+        // Fetch recent views when page loads
+        document.addEventListener('DOMContentLoaded', fetchRecentViews);
+    </script>
+</body>
+</html>

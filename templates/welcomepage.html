@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FIT SMART</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            overflow-x: hidden;
+        }
+        .profile-image {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: 2px solid white;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+        }
+    </style>
+</head>
+<body class="bg-black text-white">
+
+    <!-- Header -->
+    <header class="bg-transparent absolute top-0 left-0 w-full z-20 py-6 px-4 md:px-8 lg:px-16">
+        <nav class="flex justify-between items-center">
+            <!-- Logo -->
+            <div class="flex items-center space-x-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 text-green-500" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2L2 22h20L12 2zm0 14L8 12h8l-4 4z"/>
+                </svg>
+                <div class="flex flex-col">
+                    <span class="text-2xl font-bold">FIT SMART</span>
+                    <span class="text-xs text-green-500 font-medium tracking-wide mt-[-5px]">GET FIT, LIVE BETTER</span>
+                </div>
+            </div>
+
+            <!-- Nav Links -->
+            <ul class="hidden lg:flex items-center space-x-10 text-lg font-medium">
+                <li><a href="#" class="hover:text-green-500 transition-colors duration-300">Services</a></li>
+                <li><a href="#" class="hover:text-green-500 transition-colors duration-300">Facility</a></li>
+                
+            </ul>
+
+            <!-- Join Now -->
+            <a href="{{ url_for('login') }}" class="bg-red-500 text-white font-semibold py-3 px-8 rounded-md shadow-lg hover:bg-red-600 transition-colors duration-300">JOIN NOW</a>
+        </nav>
+    </header>
+
+    <!-- Hero Section with Video Slideshow -->
+    <main class="relative min-h-screen flex justify-center items-center px-4 overflow-hidden">
+        <!-- Video Background -->
+        <div class="absolute inset-0 w-full h-full">
+            <video id="videoPlayer" class="w-full h-full object-cover" autoplay muted></video>
+        </div>
+
+        <!-- Dark Overlay -->
+        <div class="absolute inset-0 bg-black/60"></div>
+
+        <!-- Hero Content -->
+        <div class="relative z-10 text-center lg:text-left max-w-2xl lg:max-w-4xl mx-auto flex flex-col items-center lg:items-start">
+            <h1 class="text-5xl md:text-6xl lg:text-7xl font-extrabold leading-tight tracking-wide mb-6">
+                <span class="block">Unleash Your</span>
+                <span class="block">Inner Athlete</span>
+            </h1>
+            <p class="text-white text-base md:text-lg mb-8 opacity-80 max-w-md">
+                We are dedicated to helping you transform your body and mind through the power of fitness
+            </p>
+            <a href="{{ url_for('login') }}" class="bg-red-500 text-white px-6 py-3 rounded-lg font-semibold hover:bg-red-600 transition">
+                JOIN NOW
+            </a>
+        </div>
+
+
+    </main>
+
+    <script>
+        // List of video sources (replace with your own file paths or URLs)
+        const videos = [
+            "https://cdn.pixabay.com/video/2019/10/04/27539-364430966_large.mp4",
+            "https://cdn.pixabay.com/video/2023/01/27/148204-793717940_large.mp4",
+            "https://cdn.pixabay.com/video/2024/02/15/200657-913478674_large.mp4",
+            "https://cdn.pixabay.com/video/2023/11/19/189730-886596151_large.mp4"
+            
+            
+            
+        ];
+
+        let currentVideo = 0;
+        const videoPlayer = document.getElementById("videoPlayer");
+
+        // Load first video
+        videoPlayer.src = videos[currentVideo];
+        videoPlayer.play();
+
+        // When a video ends, play the next one
+        videoPlayer.addEventListener("ended", () => {
+            currentVideo = (currentVideo + 1) % videos.length; // loop back to first video
+            videoPlayer.src = videos[currentVideo];
+            videoPlayer.play();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Beginner Pilates</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            /* Updated to use a new background image */
+            background: url('https://images.unsplash.com/photo-1717500251741-cdbc93342d5a?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D') no-repeat center center fixed;
+            background-size: cover;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 2rem;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            width: 100%;
+        }
+        .tag {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            user-select: none;
+        }
+        /* Updated category colors for pilates exercises */
+        .category-tag.core { background-color: #14b8a6; }
+        .category-tag.full-body { background-color: #ef4444; }
+        .category-tag.flexibility { background-color: #a855f7; }
+        .difficulty-tag.beginner { background-color: #10b981; }
+        .difficulty-tag.intermediate { background-color: #eab308; }
+        .difficulty-tag.advanced { background-color: #ef4444; }
+
+        .exercise-card {
+            display: flex;
+            flex-direction: column;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.5);
+            background-color: rgba(17, 24, 39, 0.8); /* Semi-transparent for cards */
+            backdrop-filter: blur(5px); /* Add a subtle blur effect */
+            transition: transform 0.2s ease-in-out;
+            cursor: pointer;
+        }
+        .exercise-card:hover {
+            transform: translateY(-5px);
+        }
+        .exercise-image-container {
+            width: 100%;
+            height: 180px;
+            overflow: hidden;
+            position: relative;
+        }
+        .exercise-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .exercise-image-container .overlay-tags {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.25rem;
+        }
+        
+        /* Modal Styles */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+        .modal-content {
+            background-color: rgba(17, 24, 39, 0.9); /* Semi-transparent dark modal background */
+            backdrop-filter: blur(10px);
+            color: #e5e7eb; /* Light text for contrast */
+            padding: 2rem;
+            border-radius: 1rem;
+            max-width: 90%;
+            max-height: 90%;
+            overflow-y: auto;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.7);
+        }
+        .close-button {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            cursor: pointer;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #e5e7eb;
+        }
+        .modal-video-placeholder {
+            width: 100%;
+            height: 250px;
+            background-color: #000000; /* Pure black for video placeholder */
+            border-radius: 0.75rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: #e5e7eb;
+            font-weight: 500;
+            font-size: 1.25rem;
+        }
+    </style>
+</head>
+<body class="text-gray-200 p-8">
+
+    <div class="container mx-auto">
+      <a href="{{ url_for('menu') }}" 
+        class="inline-block mb-6 px-4 py-2 bg-gray-700 text-white rounded-lg shadow hover:bg-gray-600 transition">
+        ← Back to Menu
+      </a>
+
+        <header class="text-center mb-12">
+            <h1 class="text-3xl sm:text-4xl font-bold text-white">Beginner Pilates Exercise Library</h1>
+            <p class="text-sm sm:text-base text-gray-400 mt-2">Discover foundational movements for core strength, flexibility, and posture</p>
+        </header>
+
+        <!-- Filters Section -->
+        <div class="bg-gray-900 p-6 rounded-2xl shadow-md mb-8 bg-opacity-80 backdrop-filter backdrop-blur-sm">
+            <h2 class="text-lg font-semibold text-gray-200 mb-4">Filters</h2>
+            
+            <!-- Search Bar -->
+            <div class="mb-6">
+                <input id="search-input" type="text" placeholder="Search exercises..." class="w-full p-3 pl-4 rounded-full border border-gray-700 bg-gray-800 text-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all bg-opacity-70">
+            </div>
+
+            <!-- Category Filters -->
+            <div class="mb-6">
+                <h3 class="font-medium text-gray-400 mb-2">Category</h3>
+                <div id="category-filters" class="flex flex-wrap gap-2">
+                    <span data-category="core" class="category-tag tag text-white bg-teal-500 hover:bg-teal-600 cursor-pointer">Core</span>
+                    <span data-category="full-body" class="category-tag tag text-white bg-red-500 hover:bg-red-600 cursor-pointer">Full Body</span>
+                    <span data-category="flexibility" class="category-tag tag text-white bg-purple-500 hover:bg-purple-600 cursor-pointer">Flexibility</span>
+                </div>
+            </div>
+
+            <!-- Difficulty Filters -->
+            <div>
+                <h3 class="font-medium text-gray-400 mb-2">Difficulty</h3>
+                <div id="difficulty-filters" class="flex flex-wrap gap-2">
+                    <span data-difficulty="beginner" class="difficulty-tag tag text-white bg-teal-500 hover:bg-teal-600 cursor-pointer">Beginner</span>
+                    <span data-difficulty="intermediate" class="difficulty-tag tag text-white bg-yellow-500 hover:bg-yellow-600 cursor-pointer">Intermediate</span>
+                    <span data-difficulty="advanced" class="difficulty-tag tag text-white bg-red-500 hover:bg-red-600 cursor-pointer">Advanced</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Exercise Counts -->
+        <div id="exercise-counts" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 gap-4 mb-8">
+            <!-- Counts will be dynamically populated here -->
+            <div class="bg-gray-900 p-4 rounded-2xl shadow text-center bg-opacity-80 backdrop-filter backdrop-blur-sm">
+                <div id="count-core" class="text-2xl font-bold text-teal-500">0</div>
+                <div class="text-gray-400 text-sm">Core</div>
+            </div>
+            <div class="bg-gray-900 p-4 rounded-2xl shadow text-center bg-opacity-80 backdrop-filter backdrop-blur-sm">
+                <div id="count-full-body" class="text-2xl font-bold text-red-500">0</div>
+                <div class="text-gray-400 text-sm">Full Body</div>
+            </div>
+            <div class="bg-gray-900 p-4 rounded-2xl shadow text-center bg-opacity-80 backdrop-filter backdrop-blur-sm">
+                <div id="count-flexibility" class="text-2xl font-bold text-purple-500">0</div>
+                <div class="text-gray-400 text-sm">Flexibility</div>
+            </div>
+        </div>
+
+        <!-- Exercise Grid -->
+        <div id="exercises-grid-container" class="bg-gray-900 p-6 rounded-2xl shadow-md bg-opacity-80 backdrop-filter backdrop-blur-sm">
+            <h2 class="text-lg font-semibold text-gray-200 mb-4">Showing <span id="exercise-count-text">0</span> exercises</h2>
+            <div id="exercises-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <!-- Exercise cards will be dynamically populated here -->
+            </div>
+        </div>
+    </div>
+
+    <!-- The Modal -->
+    <div id="exercise-modal" class="modal hidden">
+        <div class="modal-content w-full sm:w-1/2 lg:w-2/5">
+            <span class="close-button">&times;</span>
+            <div class="flex flex-col sm:flex-row justify-between items-center mb-4">
+                <h3 id="modal-name" class="text-2xl font-bold text-white"></h3>
+                <div id="modal-tags" class="flex gap-2 mt-2 sm:mt-0"></div>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                <!-- Left side: Video, Equipment, Sets & Reps -->
+                <div class="space-y-4">
+                    <div id="modal-video-container" class="modal-video-placeholder">Video Placeholder</div>
+                    <div>
+                        <h4 class="font-semibold text-gray-300 mb-1">Equipment</h4>
+                        <ul id="modal-equipment" class="list-disc list-inside text-sm text-gray-400"></ul>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-300 mb-1">Sets & Reps</h4>
+                        <ul id="modal-sets-reps" class="list-disc list-inside text-sm text-gray-400"></ul>
+                    </div>
+                </div>
+
+                <!-- Right side: Description, Target Muscles, Instructions -->
+                <div class="space-y-4">
+                    <div>
+                        <h4 class="font-semibold text-gray-300 mb-1">Description</h4>
+                        <p id="modal-description" class="text-sm text-gray-400"></p>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-300 mb-1">Target Muscles</h4>
+                        <div id="modal-target-muscles" class="flex flex-wrap gap-2 text-sm"></div>
+                    </div>
+                    <div>
+                        <h4 class="font-semibold text-gray-300 mb-1">Instructions</h4>
+                        <ol id="modal-instructions" class="list-decimal list-inside text-sm text-gray-400"></ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Data for all exercises
+        const EXERCISES = [
+            {
+                name: "The Hundred",
+                description: "A classic pilates warm-up that strengthens the core and improves breathing control. Focus on pulsing the arms while holding a tabletop leg position.",
+                category: "core",
+                difficulty: "beginner",
+                tags: ["Core", "Pilates", "Breathing", "Bodyweight"],
+                image: "https://placehold.co/400x200/14b8a6/ffffff?text=The+Hundred",
+                video: "https://www.youtube.com/embed/n55c02F5L7Y?controls=0",
+                equipment: ["Mat"],
+                setsReps: ["1 set of 100 pulses"],
+                targetMuscles: ["Transverse Abdominis", "Obliques"],
+                instructions: [
+                    "Lie on your back with knees bent at 90 degrees, shins parallel to the floor.",
+                    "Lift your head, neck, and shoulders off the mat.",
+                    "Extend your arms by your sides and begin pulsing them up and down.",
+                    "Inhale for 5 pulses and exhale for 5 pulses, repeating 10 times for a total of 100."
+                ]
+            },
+            {
+                name: "Roll-Up",
+                description: "A slow, controlled movement that articulates the spine and strengthens the abdominal muscles. It's the pilates version of a sit-up.",
+                category: "core",
+                difficulty: "beginner",
+                tags: ["Core", "Pilates", "Flexibility", "Spinal Mobility"],
+                image: "https://placehold.co/400x200/14b8a6/ffffff?text=Roll-Up",
+                video: "https://www.youtube.com/embed/Pj1a_1n3a6g?controls=0",
+                equipment: ["Mat"],
+                setsReps: ["3 sets of 8-10 reps"],
+                targetMuscles: ["Rectus Abdominis", "Spinal Erectors"],
+                instructions: [
+                    "Lie on your back with legs straight, arms extended overhead.",
+                    "Inhale to prepare, then exhale as you slowly lift your head and shoulders off the mat.",
+                    "Continue rolling up one vertebra at a time, reaching for your toes.",
+                    "Reverse the motion, slowly rolling back down with control."
+                ]
+            },
+            {
+                name: "Single-Leg Stretch",
+                description: "A fluid, alternating leg movement that challenges core stability and coordination.",
+                category: "core",
+                difficulty: "beginner",
+                tags: ["Core", "Pilates", "Bodyweight"],
+                image: "https://placehold.co/400x200/14b8a6/ffffff?text=Single-Leg+Stretch",
+                video: "https://www.youtube.com/embed/yQ0T49h27f4?controls=0",
+                equipment: ["Mat"],
+                setsReps: ["3 sets of 10-12 reps per side"],
+                targetMuscles: ["Abdominals", "Hip Flexors"],
+                instructions: [
+                    "Lie on your back, knees bent, and lift your head and shoulders.",
+                    "Hold one knee to your chest while extending the other leg straight.",
+                    "Switch legs in a fluid, continuous motion.",
+                    "Keep your core engaged throughout the exercise."
+                ]
+            },
+            {
+                name: "Bridge",
+                description: "A fundamental exercise for strengthening the glutes and hamstrings while also working the core and improving spinal mobility.",
+                category: "full-body",
+                difficulty: "beginner",
+                tags: ["Full-Body", "Glutes", "Hamstrings", "Bodyweight"],
+                image: "https://placehold.co/400x200/ef4444/ffffff?text=Bridge",
+                video: "https://www.youtube.com/embed/c1fNl_0c08M?controls=0",
+                equipment: ["Mat"],
+                setsReps: ["3 sets of 10-15 reps"],
+                targetMuscles: ["Glutes", "Hamstrings", "Core"],
+                instructions: [
+                    "Lie on your back with knees bent and feet flat on the floor, hip-width apart.",
+                    "Engage your glutes and core, then lift your hips off the mat.",
+                    "Hold for a moment at the top, then slowly lower your hips back down."
+                ]
+            },
+            {
+                name: "Cat-Cow Stretch",
+                description: "A gentle, flowing movement that warms up the spine and improves flexibility and range of motion.",
+                category: "flexibility",
+                difficulty: "beginner",
+                tags: ["Flexibility", "Spinal Mobility", "Pilates", "Warm-up"],
+                image: "https://placehold.co/400x200/a855f7/ffffff?text=Cat-Cow",
+                video: "https://www.youtube.com/embed/qg9b8L80t1Q?controls=0",
+                equipment: ["Mat"],
+                setsReps: ["3 sets of 10 reps"],
+                targetMuscles: ["Spine", "Abdominals"],
+                instructions: [
+                    "Start on all fours with your hands under your shoulders and knees under your hips.",
+                    "Inhale as you drop your belly, arch your back, and look up (Cow Pose).",
+                    "Exhale as you round your spine, tucking your chin to your chest (Cat Pose).",
+                    "Flow between the two poses with your breath."
+                ]
+            },
+            {
+                name: "Plank",
+                description: "A foundational isometric exercise that strengthens the entire core, shoulders, and back.",
+                category: "full-body",
+                difficulty: "beginner",
+                tags: ["Full-Body", "Core", "Strength", "Bodyweight"],
+                image: "https://placehold.co/400x200/ef4444/ffffff?text=Plank",
+                video: "https://www.youtube.com/embed/T04m2C2s944?controls=0",
+                equipment: ["Mat"],
+                setsReps: ["3 sets of 30-60 seconds"],
+                targetMuscles: ["Abdominals", "Shoulders", "Glutes"],
+                instructions: [
+                    "Start in a push-up position with your hands directly under your shoulders.",
+                    "Keep your back straight and your core tight, forming a straight line from head to heels.",
+                    "Hold this position for the desired duration."
+                ]
+            },
+            {
+                name: "Spinal Twist",
+                description: "A gentle twist that improves spinal mobility and massages the internal organs.",
+                category: "flexibility",
+                difficulty: "beginner",
+                tags: ["Flexibility", "Spinal Mobility", "Stretching"],
+                image: "https://placehold.co/400x200/a855f7/ffffff?text=Spinal+Twist",
+                video: "https://www.youtube.com/embed/2_Yn4E7d2fE?controls=0",
+                equipment: ["Mat"],
+                setsReps: ["2 sets of 15 seconds per side"],
+                targetMuscles: ["Obliques", "Spinal Muscles"],
+                instructions: [
+                    "Lie on your back with your arms out to the sides in a 'T' shape.",
+                    "Bring your knees to your chest and then slowly lower them to one side.",
+                    "Keep your shoulders on the mat as you twist.",
+                    "Hold for a few breaths before bringing your knees back to center and repeating on the other side."
+                ]
+            },
+            {
+                name: "Leg Circles",
+                description: "This exercise isolates the hip joint while challenging the stability of the core. It improves hip mobility and strengthens the abs.",
+                category: "core",
+                difficulty: "beginner",
+                tags: ["Core", "Pilates", "Hip Mobility", "Bodyweight"],
+                image: "https://placehold.co/400x200/14b8a6/ffffff?text=Leg+Circles",
+                video: "https://www.youtube.com/embed/5U2V2_04g0Y?controls=0",
+                equipment: ["Mat"],
+                setsReps: ["3 sets of 5-8 circles in each direction per leg"],
+                targetMuscles: ["Abdominals", "Hip Flexors"],
+                instructions: [
+                    "Lie on your back, one leg bent and foot flat on the mat.",
+                    "Extend the other leg straight up towards the ceiling.",
+                    "Circle the straight leg in a small, controlled motion, keeping your hips stable.",
+                    "Perform circles in both directions before switching legs."
+                ]
+            }
+        ];
+
+        let filteredExercises = [...EXERCISES];
+        let activeCategories = [];
+        let activeDifficulties = [];
+        let searchTerm = "";
+
+        const exercisesGrid = document.getElementById('exercises-grid');
+        const searchInput = document.getElementById('search-input');
+        const categoryFilters = document.getElementById('category-filters');
+        const difficultyFilters = document.getElementById('difficulty-filters');
+        const exerciseCountText = document.getElementById('exercise-count-text');
+        
+        const modal = document.getElementById('exercise-modal');
+        const closeModalBtn = modal.querySelector('.close-button');
+        const modalName = document.getElementById('modal-name');
+        const modalTags = document.getElementById('modal-tags');
+        const modalEquipment = document.getElementById('modal-equipment');
+        const modalSetsReps = document.getElementById('modal-sets-reps');
+        const modalDescription = document.getElementById('modal-description');
+        const modalTargetMuscles = document.getElementById('modal-target-muscles');
+        const modalInstructions = document.getElementById('modal-instructions');
+        const modalVideoContainer = document.getElementById('modal-video-container');
+
+        // Function to render a single exercise card
+        function renderExerciseCard(exercise, index) {
+            const card = document.createElement('div');
+            card.className = 'exercise-card';
+            // Use a data attribute to store the index for easy lookup later
+            card.setAttribute('data-index', index); 
+            card.innerHTML = `
+                <div class="exercise-image-container">
+                    <img src="${exercise.image}" alt="${exercise.name}" class="exercise-image">
+                    <div class="overlay-tags">
+                        <span class="tag bg-gray-900 text-white">${exercise.difficulty.charAt(0).toUpperCase() + exercise.difficulty.slice(1)}</span>
+                        <span class="tag category-tag ${exercise.category}-tag text-white">${exercise.category.charAt(0).toUpperCase() + exercise.category.slice(1)}</span>
+                    </div>
+                </div>
+                <div class="p-4 flex-1 flex flex-col">
+                    <h3 class="font-bold text-white text-lg mb-2">${exercise.name}</h3>
+                    <p class="text-sm text-gray-400 flex-1">${exercise.description}</p>
+                    <div class="mt-4 flex flex-wrap gap-2">
+                        ${exercise.tags.map(tag => `<span class="tag bg-gray-700 text-gray-200">${tag}</span>`).join('')}
+                    </div>
+                </div>
+            `;
+            return card;
+        }
+
+        // Function to filter and render exercises
+        function updateDisplay() {
+            filteredExercises = EXERCISES.filter(exercise => {
+                const matchesCategory = activeCategories.length === 0 || activeCategories.includes(exercise.category);
+                const matchesDifficulty = activeDifficulties.length === 0 || activeDifficulties.includes(exercise.difficulty);
+                const matchesSearch = searchTerm === "" ||
+                                      exercise.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                      exercise.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                                      exercise.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()));
+                return matchesCategory && matchesDifficulty && matchesSearch;
+            });
+
+            exercisesGrid.innerHTML = '';
+            if (filteredExercises.length > 0) {
+                filteredExercises.forEach((exercise, index) => {
+                    exercisesGrid.appendChild(renderExerciseCard(exercise, index));
+                });
+            } else {
+                exercisesGrid.innerHTML = '<p class="text-center text-gray-500 col-span-full">No exercises found with the current filters.</p>';
+            }
+
+            exerciseCountText.textContent = filteredExercises.length;
+            
+            // Recalculate and update category counts
+            const counts = { 'core': 0, 'full-body': 0, 'flexibility': 0 };
+            EXERCISES.forEach(exercise => {
+                if (
+                    (activeDifficulties.length === 0 || activeDifficulties.includes(exercise.difficulty)) &&
+                    (searchTerm === "" || exercise.name.toLowerCase().includes(searchTerm.toLowerCase()))
+                ) {
+                    if (counts.hasOwnProperty(exercise.category)) {
+                        counts[exercise.category]++;
+                    }
+                }
+            });
+
+            document.getElementById('count-core').textContent = counts['core'];
+            document.getElementById('count-full-body').textContent = counts['full-body'];
+            document.getElementById('count-flexibility').textContent = counts['flexibility'];
+        }
+
+        // Function to open the modal and populate it with exercise data
+        function openModal(index) {
+            const exercise = filteredExercises[index];
+            if (!exercise) return;
+
+            // Clear previous content
+            modalTags.innerHTML = '';
+            modalEquipment.innerHTML = '';
+            modalSetsReps.innerHTML = '';
+            modalTargetMuscles.innerHTML = '';
+            modalInstructions.innerHTML = '';
+            
+            // Populate modal with content
+            modalName.textContent = exercise.name;
+            modalDescription.textContent = exercise.description;
+
+            const categoryTag = document.createElement('span');
+            categoryTag.className = `tag category-tag ${exercise.category}-tag text-white`;
+            categoryTag.textContent = exercise.category.charAt(0).toUpperCase() + exercise.category.slice(1);
+            modalTags.appendChild(categoryTag);
+
+            const difficultyTag = document.createElement('span');
+            difficultyTag.className = 'tag bg-gray-900 text-white';
+            difficultyTag.textContent = exercise.difficulty.charAt(0).toUpperCase() + exercise.difficulty.slice(1);
+            modalTags.appendChild(difficultyTag);
+
+            exercise.equipment.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = item;
+                modalEquipment.appendChild(li);
+            });
+
+            exercise.setsReps.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = item;
+                modalSetsReps.appendChild(li);
+            });
+
+            exercise.targetMuscles.forEach(muscle => {
+                const span = document.createElement('span');
+                span.className = 'tag bg-blue-100 text-blue-800';
+                span.textContent = muscle;
+                modalTargetMuscles.appendChild(span);
+            });
+
+            exercise.instructions.forEach(step => {
+                const li = document.createElement('li');
+                li.textContent = step;
+                modalInstructions.appendChild(li);
+            });
+
+            // Set up video placeholder
+            modalVideoContainer.innerHTML = `
+                <iframe 
+                    class="w-full h-full rounded-xl"
+                    src="${exercise.video}" 
+                    frameborder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                    allowfullscreen>
+                </iframe>
+            `;
+
+            modal.classList.remove('hidden');
+        }
+
+        // Function to close the modal
+        function closeModal() {
+            modal.classList.add('hidden');
+            // Stop video playback when the modal is closed
+            const iframe = modalVideoContainer.querySelector('iframe');
+            if (iframe) {
+                // A common trick to stop an iframe video without removing the element
+                const tempSrc = iframe.src;
+                iframe.src = tempSrc;
+            }
+        }
+
+        // Add event listeners for filters
+        categoryFilters.addEventListener('click', (e) => {
+            const tag = e.target.closest('.category-tag');
+            if (tag) {
+                const category = tag.dataset.category;
+                tag.classList.toggle('active'); // Use toggle for active state
+                if (activeCategories.includes(category)) {
+                    activeCategories = activeCategories.filter(c => c !== category);
+                } else {
+                    activeCategories.push(category);
+                }
+                updateDisplay();
+            }
+        });
+
+        difficultyFilters.addEventListener('click', (e) => {
+            const tag = e.target.closest('.difficulty-tag');
+            if (tag) {
+                const difficulty = tag.dataset.difficulty;
+                tag.classList.toggle('active'); // Use toggle for active state
+                if (activeDifficulties.includes(difficulty)) {
+                    activeDifficulties = activeDifficulties.filter(d => d !== difficulty);
+                } else {
+                    activeDifficulties.push(difficulty);
+                }
+                updateDisplay();
+            }
+        });
+
+        // Add event listener for search input
+        searchInput.addEventListener('input', (e) => {
+            searchTerm = e.target.value;
+            updateDisplay();
+        });
+
+        // Add event listener for clicking on any exercise card
+        exercisesGrid.addEventListener('click', (e) => {
+            const card = e.target.closest('.exercise-card');
+            if (card) {
+                const index = card.getAttribute('data-index');
+                openModal(index);
+            }
+        });
+
+        // Add event listeners for the modal
+        closeModalBtn.addEventListener('click', closeModal);
+        window.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeModal();
+            }
+        });
+
+        // Initial render
+        updateDisplay();
+    </script>
+</body>
+</html>

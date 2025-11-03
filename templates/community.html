@@ -1,0 +1,1327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitCommunity - FIT SMART</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #000;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        .icon {
+            width: 24px;
+            height: 24px;
+            fill: none;
+            stroke-width: 2;
+            stroke-linecap: round;
+            stroke-linejoin: round;
+        }
+        
+        /* Card hover effect */
+        .card-hover-effect {
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        
+        .card-hover-effect:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+        }
+        
+        /* Tab styling */
+        .tab-active {
+            border-bottom: 3px solid #f43f5e;
+            color: #f43f5e;
+        }
+        
+        /* Loading animation */
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #f43f5e;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .app-container {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Styles */
+        .header {
+            background: #111827;
+            border-bottom: 1px solid #374151;
+            padding: 1rem 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 32px;
+            background: #f43f5e;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+
+        .logo-text {
+            font-size: 1.25rem;
+            font-weight: bold;
+            color: white;
+        }
+
+        .search-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-left: 2rem;
+        }
+
+        .search-input {
+            width: 320px;
+            padding: 0.5rem 1rem;
+            border: 1px solid #374151;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            background: #1f2937;
+            color: white;
+        }
+
+        .header-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        .btn-primary {
+            background: #f43f5e;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #e11d48;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: #9ca3af;
+            padding: 0.5rem;
+        }
+
+        .btn-ghost:hover {
+            background: #374151;
+        }
+
+        .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        /* Main Layout */
+        .main-layout {
+            flex: 1;
+            display: flex;
+            overflow: hidden;
+            background: #000;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 256px;
+            background: #111827;
+            border-right: 1px solid #374151;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-user {
+            padding: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .sidebar-nav {
+            padding: 0 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            margin-bottom: 0.25rem;
+            width: 100%;
+            border: none;
+            background: transparent;
+            color: #d1d5db;
+        }
+
+        .nav-item:hover {
+            background: #374151;
+        }
+
+        .nav-item.active {
+            background: #374151;
+            color: #f43f5e;
+        }
+
+        .sidebar-groups {
+            flex: 1;
+            padding: 0 1rem;
+            overflow-y: auto;
+        }
+
+        .sidebar-groups h3 {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #d1d5db;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .group-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            cursor: pointer;
+            margin-bottom: 0.5rem;
+            width: 100%;
+            border: none;
+            background: transparent;
+            text-align: left;
+            color: #d1d5db;
+        }
+
+        .group-item:hover {
+            background: #374151;
+        }
+
+        .group-item.active {
+            background: #374151;
+        }
+
+        .group-avatar {
+            width: 32px;
+            height: 32px;
+            background: #1f2937;
+            border-radius: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #f43f5e;
+            font-weight: 500;
+            font-size: 0.75rem;
+        }
+
+        .group-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .group-name {
+            font-size: 0.875rem;
+            font-weight: 500;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            color: #f3f4f6;
+        }
+
+        .group-members {
+            font-size: 0.75rem;
+            color: #9ca3af;
+        }
+
+        /* Main Content */
+        .main-content {
+            flex: 1;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .content-view {
+            height: 100%;
+            overflow-y: auto;
+            padding: 1.5rem;
+            background: #000;
+        }
+
+        .content-view.hidden {
+            display: none;
+        }
+
+        /* Groups Grid */
+        .groups-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .groups-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: white;
+        }
+
+        .filter-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .filter-text {
+            font-size: 0.875rem;
+            color: #9ca3af;
+        }
+
+        .btn-filter {
+            padding: 0.375rem 0.75rem;
+            border: 1px solid #374151;
+            border-radius: 0.375rem;
+            background: #1f2937;
+            cursor: pointer;
+            font-size: 0.875rem;
+            color: #d1d5db;
+        }
+
+        .btn-filter.active {
+            background: #f43f5e;
+            color: white;
+            border-color: #f43f5e;
+        }
+
+        .groups-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* Group Card */
+        .group-card {
+            background: #111827;
+            border-radius: 0.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: box-shadow 0.2s;
+        }
+
+        .group-card:hover {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .group-card-image {
+            width: 100%;
+            height: 192px;
+            object-fit: cover;
+            position: relative;
+        }
+
+        .group-card-content {
+            padding: 1rem;
+        }
+
+        .group-card-category {
+            position: absolute;
+            top: 0.75rem;
+            left: 0.75rem;
+            background: #f43f5e;
+            color: white;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+        }
+
+        .group-card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            color: white;
+        }
+
+        .group-card-description {
+            font-size: 0.875rem;
+            color: #9ca3af;
+            margin-bottom: 0.75rem;
+            line-height: 1.4;
+        }
+
+        .group-card-stats {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 0.875rem;
+            color: #9ca3af;
+            margin-bottom: 0.75rem;
+        }
+
+        .group-card-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .group-members-avatars {
+            display: flex;
+            margin-left: -0.5rem;
+        }
+
+        .member-avatar {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            border: 2px solid #111827;
+            margin-left: -0.5rem;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #374151;
+            color: #d1d5db;
+        }
+
+        .btn-outline:hover {
+            background: #374151;
+        }
+
+        /* Progress Cards */
+        .progress-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .progress-card {
+            background: #111827;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .progress-value {
+            font-size: 1.875rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-value.green {
+            color: #10b981;
+        }
+
+        .progress-value.blue {
+            color: #3b82f6;
+        }
+
+        .progress-value.purple {
+            color: #8b5cf6;
+        }
+
+        /* Modal Styles */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-overlay.hidden {
+            display: none;
+        }
+
+        .modal {
+            background: #111827;
+            border-radius: 0.5rem;
+            padding: 1.5rem;
+            max-width: 480px;
+            width: 90%;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid #374151;
+        }
+
+        .modal-header {
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: white;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 500;
+            margin-bottom: 0.5rem;
+            color: #d1d5db;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #374151;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            background: #1f2937;
+            color: white;
+        }
+
+        .form-textarea {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #374151;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            resize: vertical;
+            min-height: 80px;
+            background: #1f2937;
+            color: white;
+        }
+
+        .form-select {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #374151;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            background: #1f2937;
+            color: white;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .guidelines-box {
+            background: #1e293b;
+            border: 1px solid #374151;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .guidelines-title {
+            font-weight: 500;
+            color: #f43f5e;
+            margin-bottom: 0.5rem;
+        }
+
+        .guidelines-list {
+            font-size: 0.875rem;
+            color: #d1d5db;
+            line-height: 1.5;
+        }
+
+        /* Chat Styles */
+        .chat-container {
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background: #111827;
+            border-radius: 0.5rem;
+            margin: 1rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #374151;
+        }
+
+        .chat-header {
+            padding: 1rem;
+            border-bottom: 1px solid #374151;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .chat-header-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+        }
+
+        .message {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .message-content {
+            flex: 1;
+        }
+
+        .message-header {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .message-author {
+            font-weight: 500;
+            font-size: 0.875rem;
+            color: white;
+        }
+
+        .message-time {
+            font-size: 0.75rem;
+            color: #9ca3af;
+        }
+
+        .message-bubble {
+            background: #1f2937;
+            border-radius: 0.5rem;
+            padding: 0.75rem;
+            max-width: 400px;
+        }
+
+        .message-text {
+            font-size: 0.875rem;
+            line-height: 1.4;
+            color: #d1d5db;
+        }
+
+        .message-actions {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .message-action {
+            display: flex;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.25rem 0.5rem;
+            border: none;
+            background: transparent;
+            color: #9ca3af;
+            cursor: pointer;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+        }
+
+        .message-action:hover {
+            background: #374151;
+        }
+
+        .message-action.liked {
+            color: #f43f5e;
+        }
+
+        .chat-input {
+            border-top: 1px solid #374151;
+            padding: 1rem;
+        }
+
+        .chat-input-row {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .chat-input-field {
+            flex: 1;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #374151;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            background: #1f2937;
+            color: white;
+        }
+
+        .icon {
+            width: 16px;
+            height: 16px;
+            display: inline-block;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .no-groups, .no-messages, .error-message {
+            text-align: center;
+            padding: 2rem;
+            color: #9ca3af;
+            font-style: italic;
+        }
+
+        .error-message {
+            color: #f43f5e;
+        }
+
+        .group-card-image {
+            background-color: #1f2937;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #f43f5e;
+            font-weight: bold;
+        }
+
+        /* Loading states */
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+
+        /* Modal backdrop */
+        .modal-overlay {
+            backdrop-filter: blur(2px);
+        }
+
+        @media (max-width: 768px) {
+            .search-container {
+                display: none;
+            }
+            
+            .groups-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .progress-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-left">
+                <div class="logo">
+                    <div class="logo-icon">👥</div>
+                    <h1 class="logo-text">FIT SMART</h1>
+                </div>
+                <div class="search-container">
+                    <input type="text" class="search-input" placeholder="Search groups, members, or goals...">
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="btn btn-primary" onclick="openCreateModal()">
+                    <span>➕</span>
+                    Create Group
+                </button>
+                <button class="btn btn-ghost">🔔</button>
+                
+            </div>
+        </header>
+
+        <!-- Main Layout -->
+        <div class="main-layout">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <div class="sidebar-user">
+                    <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=face" 
+                         alt="Alex Johnson" class="avatar">
+                    <div>
+                        <div class="group-name">User</div>
+                        <div class="group-members">Fitness Enthusiast</div>
+                    </div>
+                </div>
+
+                <nav class="sidebar-nav">
+                    <button class="nav-item active" onclick="showView('all', this)" data-view="all">
+                        <span>👥</span>
+                        All Groups
+                    </button>
+                    <button class="nav-item" onclick="showView('progress', this)" data-view="progress">
+                        <span>📈</span>
+                        My Progress
+                    </button>
+                </nav>
+
+                <hr style="margin: 0 1rem; border: none; border-top: 1px solid #374151;">
+
+                <div class="sidebar-groups">
+                    <h3>My Groups <span id="group-count">0</span></h3>
+                    <div id="joined-groups">
+                        <!-- Joined groups will be populated by JavaScript -->
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main Content -->
+            <main class="main-content">
+                <!-- All Groups View -->
+                <div id="all-view" class="content-view">
+                    <div class="groups-header">
+                        <h2 class="groups-title">Discover Fitness Groups</h2>
+                        <div class="filter-container">
+                            <span>🔍</span>
+                            <span class="filter-text">Filter by category:</span>
+                            <button class="btn-filter active" onclick="filterGroups('All', this)">All</button>
+                            <button class="btn-filter" onclick="filterGroups('Running', this)">Running</button>
+                            <button class="btn-filter" onclick="filterGroups('Muscle Building', this)">Muscle Building</button>
+                            <button class="btn-filter" onclick="filterGroups('Yoga & Flexibility', this)">Yoga & Flexibility</button>
+                            <button class="btn-filter" onclick="filterGroups('Weight Loss', this)">Weight Loss</button>
+                        </div>
+                    </div>
+                    <div class="groups-grid" id="groups-grid">
+                        <!-- Groups will be populated by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Progress View -->
+                <div id="progress-view" class="content-view hidden">
+                    <h2 class="groups-title">My Progress</h2>
+                    <div class="progress-grid">
+                        <div class="progress-card">
+                            <div class="progress-card-header">
+                                <h3>Weekly Workouts</h3>
+                                <span>📈</span>
+                            </div>
+                            <div class="progress-value green">5/5</div>
+                            <p style="font-size: 0.875rem; color: #9ca3af;">Goal completed!</p>
+                        </div>
+                        <div class="progress-card">
+                            <div class="progress-card-header">
+                                <h3>Running Distance</h3>
+                                <span>📈</span>
+                            </div>
+                            <div class="progress-value blue">25.3 km</div>
+                            <p style="font-size: 0.875rem; color: #9ca3af;">This week</p>
+                        </div>
+                        <div class="progress-card">
+                            <div class="progress-card-header">
+                                <h3>Groups Active</h3>
+                                <span>📈</span>
+                            </div>
+                            <div class="progress-value purple" id="active-groups-count">0</div>
+                            <p style="font-size: 0.875rem; color: #9ca3af;">Communities joined</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chat View -->
+                <div id="chat-view" class="content-view hidden">
+                    <div class="chat-container">
+                        <div class="chat-header">
+                            <div class="chat-header-info">
+                                <img id="chat-group-image" src="" alt="" style="width: 40px; height: 40px; border-radius: 0.5rem; object-fit: cover;">
+                                <div>
+                                    <h3 id="chat-group-name"></h3>
+                                    <p id="chat-group-members" style="font-size: 0.875rem; color: #9ca3af;"></p>
+                                </div>
+                            </div>
+                            <span id="chat-group-category" style="background: #374151; padding: 0.25rem 0.5rem; border-radius: 0.25rem; font-size: 0.75rem; color: #d1d5db;"></span>
+                        </div>
+                        <div class="chat-messages" id="chat-messages">
+                            <!-- Messages will be populated by JavaScript -->
+                        </div>
+                        <div class="chat-input">
+                            <div class="chat-input-row">
+                                <input type="text" class="chat-input-field" id="message-input" placeholder="Type your message..." onkeypress="handleMessageKeyPress(event)">
+                                <button class="btn btn-ghost">📷</button>
+                                <button class="btn btn-ghost">🎯</button>
+                                <button class="btn btn-primary" onclick="sendMessage()">➤</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Create Group Modal -->
+    <div id="create-modal" class="modal-overlay hidden">
+        <div class="modal">
+            <div class="modal-header">
+                <h2 class="modal-title">Create New Fitness Group</h2>
+            </div>
+            <form id="create-form" onsubmit="createGroup(event)">
+                <div class="form-group">
+                    <label class="form-label">Group Name</label>
+                    <input type="text" class="form-input" id="group-name" placeholder="e.g., Morning Runners Club" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Category</label>
+                    <select class="form-select" id="group-category" required>
+                        <option value="">Select a fitness category</option>
+                        <option value="Weight Loss">Weight Loss</option>
+                        <option value="Muscle Building">Muscle Building</option>
+                        <option value="Cardio & Endurance">Cardio & Endurance</option>
+                        <option value="Yoga & Flexibility">Yoga & Flexibility</option>
+                        <option value="CrossFit">CrossFit</option>
+                        <option value="Running">Running</option>
+                        <option value="Cycling">Cycling</option>
+                        <option value="Swimming">Swimming</option>
+                        <option value="Nutrition">Nutrition</option>
+                        <option value="General Fitness">General Fitness</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-textarea" id="group-description" placeholder="Describe your group's goals and what members can expect..." required></textarea>
+                </div>
+                <div class="guidelines-box">
+                    <h4 class="guidelines-title">Group Guidelines</h4>
+                    <div class="guidelines-list">
+                        • Keep discussions respectful and supportive<br>
+                        • Share progress photos and achievements<br>
+                        • Ask questions and help others reach their goals<br>
+                        • Stay motivated together!
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline" onclick="closeCreateModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Create Group</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+<script>
+    let currentCategory = 'All';
+    let currentView = 'all';
+    let selectedGroupId = null;
+    let joinedGroups = [];
+
+    // Initialize the app
+    async function init() {
+        await renderGroups();
+        await loadJoinedGroups();
+        updateJoinedGroupsCount();
+    }
+
+    // Render groups grid
+    async function renderGroups() {
+        try {
+            const response = await fetch("/api/groups", {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include'
+            });
+            
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            
+            const groups = await response.json();
+            const container = document.getElementById("groups-grid");
+            
+            if (groups.length === 0) {
+                container.innerHTML = '<div class="no-groups">No groups found. Be the first to create one!</div>';
+                return;
+            }
+
+            container.innerHTML = groups
+                .filter(g => currentCategory === 'All' || g.category === currentCategory)
+                .map(g => {
+                    const isJoined = joinedGroups.some(jg => jg.id === g.id);
+                    return `
+                    <div class="group-card">
+                        <div class="group-card-image">
+                            <img src="${g.image || 'https://placehold.co/400x300/1f2937/f43f5e?text=Fitness+Group'}" alt="${g.name}" style="width: 100%; height: 100%; object-fit: cover;">
+                            <span class="group-card-category">${g.category || 'General Fitness'}</span>
+                        </div>
+                        <div class="group-card-content">
+                            <h3 class="group-card-title">${g.name}</h3>
+                            <p class="group-card-description">${g.description}</p>
+                            <div class="group-card-stats">
+                                <span>${g.memberCount || 0} members</span>
+                                <span>${g.messagesCount || 0} posts</span>
+                            </div>
+                            <div class="group-card-actions">
+                                <button class="btn ${isJoined ? 'btn-outline' : 'btn-primary'}" onclick="${isJoined ? 'showGroupChat(\'' + g.id + '\')' : 'joinGroup(\'' + g.id + '\')'}">
+                                    ${isJoined ? 'Open Chat' : 'Join Group'}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `}).join("");
+        } catch (err) {
+            console.error("Error loading groups:", err);
+            document.getElementById("groups-grid").innerHTML = 
+                '<div class="error-message">Error loading groups. Please try again later.</div>';
+        }
+    }
+
+    // Load user's joined groups
+    async function loadJoinedGroups() {
+        try {
+            const response = await fetch("/api/user/groups", {
+                credentials: 'include'
+            });
+            
+            if (response.ok) {
+                joinedGroups = await response.json();
+                const joinedContainer = document.getElementById("joined-groups");
+                
+                if (joinedGroups.length === 0) {
+                    joinedContainer.innerHTML = '<div class="no-groups">You haven\'t joined any groups yet.</div>';
+                } else {
+                    joinedContainer.innerHTML = joinedGroups.map(g => `
+                        <button class="group-item" onclick="showGroupChat('${g.id}')" data-group="${g.id}">
+                            <div class="group-avatar">${g.name.charAt(0)}</div>
+                            <div class="group-info">
+                                <div class="group-name">${g.name}</div>
+                                <div class="group-members">${g.memberCount || 0} members</div>
+                            </div>
+                        </button>
+                    `).join("");
+                }
+                
+                // Update active groups count in progress view
+                document.getElementById('active-groups-count').textContent = joinedGroups.length;
+                updateJoinedGroupsCount();
+            } else {
+                console.error("Failed to load joined groups");
+            }
+        } catch (err) {
+            console.error("Error loading joined groups:", err);
+            document.getElementById("joined-groups").innerHTML = 
+                '<div class="error-message">Error loading your groups.</div>';
+        }
+    }
+
+    // Update joined groups count
+    function updateJoinedGroupsCount() {
+        document.getElementById('group-count').textContent = joinedGroups.length;
+    }
+
+    // Filter groups by category
+    function filterGroups(category, button) {
+        currentCategory = category;
+        document.querySelectorAll('.btn-filter').forEach(btn => btn.classList.remove('active'));
+        button.classList.add('active');
+        renderGroups();
+    }
+
+    // Show different views
+    function showView(viewName, button) {
+        currentView = viewName;
+        
+        document.querySelectorAll('.content-view').forEach(view => view.classList.add('hidden'));
+        document.getElementById(viewName + '-view').classList.remove('hidden');
+
+        if (button) {
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            button.classList.add('active');
+        }
+    }
+
+    // Join a group
+    async function joinGroup(groupId) {
+        try {
+            const response = await fetch(`/api/groups/${groupId}/join`, {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include'
+            });
+
+            const result = await response.json();
+            
+            if (response.ok && result.success) {
+                alert('Successfully joined the group!');
+                await loadJoinedGroups(); // Update joined groups
+                renderGroups(); // Refresh the list
+            } else {
+                alert(result.error || 'Error joining group. Please try again.');
+            }
+        } catch (err) {
+            console.error("Error joining group:", err);
+            alert('Error joining group. Please try again.');
+        }
+    }
+
+    // Show group chat
+    async function showGroupChat(groupId) {
+        try {
+            selectedGroupId = groupId;
+            
+            // Highlight selected group in sidebar
+            document.querySelectorAll('.group-item').forEach(item => {
+                if (item.getAttribute('data-group') === groupId) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+
+            // Get group details
+            const groupResponse = await fetch(`/api/groups/${groupId}`, {
+                credentials: 'include'
+            });
+            
+            if (groupResponse.ok) {
+                const group = await groupResponse.json();
+                document.getElementById('chat-group-name').textContent = group.name;
+                document.getElementById('chat-group-members').textContent = `${group.memberCount || 0} members`;
+                document.getElementById('chat-group-category').textContent = group.category;
+                
+                const groupImage = document.getElementById('chat-group-image');
+                if (group.image) {
+                    groupImage.src = group.image;
+                } else {
+                    groupImage.src = 'https://placehold.co/40x40/1f2937/f43f5e?text=' + group.name.charAt(0);
+                }
+            } else {
+                console.error("Failed to load group details");
+            }
+
+            // Load messages
+            await loadGroupMessages(groupId);
+            
+            showView('chat');
+        } catch (err) {
+            console.error("Error loading group chat:", err);
+            alert('Error loading group chat. Please try again.');
+        }
+    }
+
+    // Load group messages
+    async function loadGroupMessages(groupId) {
+        try {
+            const messagesResponse = await fetch(`/api/groups/${groupId}/messages`, {
+                credentials: 'include'
+            });
+            
+            if (messagesResponse.ok) {
+                const messages = await messagesResponse.json();
+                renderMessages(messages);
+            } else {
+                console.error("Failed to load messages");
+                document.getElementById("chat-messages").innerHTML = 
+                    '<div class="error-message">Error loading messages.</div>';
+            }
+        } catch (err) {
+            console.error("Error loading messages:", err);
+            document.getElementById("chat-messages").innerHTML = 
+                '<div class="error-message">Error loading messages.</div>';
+        }
+    }
+
+    
+
+    // Render chat messages
+    function renderMessages(messages) {
+        const container = document.getElementById("chat-messages");
+        
+        if (!messages || messages.length === 0) {
+            container.innerHTML = '<div class="no-messages">No messages yet. Be the first to post!</div>';
+            return;
+        }
+
+        container.innerHTML = messages.map(msg => `
+            <div class="message">
+                <img src="${msg.avatar || 'https://placehold.co/32x32/3b82f6/ffffff?text=U'}" class="message-avatar">
+                <div class="message-content">
+                    <div class="message-header">
+                        <span class="message-author">${msg.user || 'Unknown User'}</span>
+                        <span class="message-time">${formatMessageTime(msg.timestamp)}</span>
+                    </div>
+                    <div class="message-bubble">
+                        <p class="message-text">${msg.content}</p>
+                    </div>
+                </div>
+            </div>
+        `).join("");
+        
+        container.scrollTop = container.scrollHeight;
+    }
+
+    // Format message timestamp
+    function formatMessageTime(timestamp) {
+        if (!timestamp) return '';
+        
+        let date;
+        if (typeof timestamp === 'string') {
+            date = new Date(timestamp);
+        } else if (timestamp._seconds) {
+            date = new Date(timestamp._seconds * 1000);
+        } else {
+            date = new Date(timestamp);
+        }
+        
+        return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+    }
+
+    // Handle message input key press
+    function handleMessageKeyPress(event) {
+        if (event.key === 'Enter') {
+            sendMessage();
+            event.preventDefault();
+        }
+    }
+
+    // Send message
+    async function sendMessage() {
+        const input = document.getElementById("message-input");
+        const text = input.value.trim();
+        
+        if (!text || !selectedGroupId) return;
+
+        try {
+            const response = await fetch(`/api/groups/${selectedGroupId}/messages`, {
+                method: "POST",
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({ content: text })
+            });
+
+            const result = await response.json();
+            
+            if (response.ok && result.success) {
+                input.value = "";
+                await loadGroupMessages(selectedGroupId); // Reload messages
+            } else {
+                alert(result.error || 'Error sending message. Please try again.');
+            }
+        } catch (err) {
+            console.error("Error sending message:", err);
+            alert('Error sending message. Please try again.');
+        }
+    }
+
+    // Create group modal functions
+    function openCreateModal() {
+        document.getElementById('create-modal').classList.remove('hidden');
+    }
+
+    function closeCreateModal() {
+        document.getElementById('create-modal').classList.add('hidden');
+        document.getElementById('create-form').reset();
+    }
+
+    // Create new group
+    async function createGroup(event) {
+        event.preventDefault();
+        
+        const name = document.getElementById('group-name').value;
+        const category = document.getElementById('group-category').value;
+        const description = document.getElementById('group-description').value;
+
+        try {
+            const response = await fetch('/api/groups', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                credentials: 'include',
+                body: JSON.stringify({
+                    name: name,
+                    category: category,
+                    description: description
+                })
+            });
+
+            const result = await response.json();
+            
+            if (response.ok && result.success) {
+                closeCreateModal();
+                alert('Group created successfully!');
+                await loadJoinedGroups(); // Update joined groups
+                renderGroups(); // Refresh the groups list
+            } else {
+                alert(result.error || 'Error creating group. Please try again.');
+            }
+        } catch (err) {
+            console.error("Error creating group:", err);
+            alert('Error creating group. Please try again.');
+        }
+    }
+
+    // Initialize when page loads
+    document.addEventListener('DOMContentLoaded', init);
+</script>
+
+</body>
+</html>

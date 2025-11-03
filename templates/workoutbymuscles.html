@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exercises By Muscle Group</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #1a1a1a;
+        }
+        .card-hover-effect {
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        .card-hover-effect:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-8">
+
+    <div class="bg-gray-800 rounded-3xl shadow-xl max-w-6xl mx-auto p-12 relative">
+        <div class="text-center mb-12">
+            <h1 id="main-heading" class="text-4xl font-bold text-gray-200">
+                Exercises By <span class="text-orange-400">Muscle Group</span>
+            </h1>
+            <p id="main-subheading" class="mt-4 text-gray-400 max-w-2xl mx-auto">
+                Explore exercises by muscle group, helping you target each workout effectively, whether you're a novice or a pro.
+            </p>
+        </div>
+
+        <!-- Carousel View -->
+        <div id="carousel-view">
+            <!-- "See More" option -->
+            <div class="flex justify-end mb-4">
+                <button id="see-more-btn" class="text-orange-400 font-semibold text-sm hover:underline focus:outline-none focus:ring-2 focus:ring-orange-500 rounded-md">
+                    See More
+                </button>
+            </div>
+
+            <!-- Navigation Arrows -->
+            <button id="left-arrow" class="absolute left-4 top-1/2 -translate-y-1/2 bg-gray-700 rounded-full p-2 shadow-lg hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors duration-200">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+            </button>
+    
+            <button id="right-arrow" class="absolute right-4 top-1/2 -translate-y-1/2 bg-gray-700 rounded-full p-2 shadow-lg hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-orange-500 transition-colors duration-200">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+            </button>
+    
+            <!-- Muscle Group Cards Container -->
+            <div id="cards-container" class="flex flex-col md:flex-row justify-center items-center gap-8">
+                <!-- Cards will be dynamically inserted here by JavaScript -->
+            </div>
+        </div>
+        
+        <!-- Grid View -->
+        <div id="grid-view" class="hidden">
+            <div class="flex justify-start mb-4">
+                <button id="back-btn-grid" class="text-orange-400 font-semibold text-sm hover:underline focus:outline-none focus:ring-2 focus:ring-orange-500 rounded-md">
+                    Back
+                </button>
+            </div>
+            <div id="grid-container" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <!-- All cards will be dynamically inserted here -->
+            </div>
+        </div>
+
+        <!-- Exercise Details View -->
+        <div id="exercise-view" class="hidden">
+            <div class="flex justify-start mb-4">
+                <button id="back-btn-exercises" class="text-orange-400 font-semibold text-sm hover:underline focus:outline-none focus:ring-2 focus:ring-orange-500 rounded-md">
+                    Back
+                </button>
+            </div>
+            <div id="exercise-list" class="space-y-6">
+                <!-- Exercise cards will be dynamically inserted here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const muscleGroups = [
+            { 
+                name: "Abs", 
+                image: "https://placehold.co/400x300/2d3748/cbd5e0?text=Abs", 
+                exercises: [
+                    { name: "Plank", description: "Hold a push-up position with your body in a straight line.", video: "https://www.youtube.com/embed/ASdvN_X5wzY" },
+                    { name: "Crunches", description: "Lie on your back with knees bent and lift your upper body towards your knees.", video: "https://www.youtube.com/embed/Xyd_fa5zo64" }
+                ]
+            },
+            { 
+                name: "Biceps", 
+                image: "https://placehold.co/400x300/2d3748/cbd5e0?text=Biceps",
+                exercises: [
+                    { name: "Dumbbell Curls", description: "Lift dumbbells towards your shoulders, contracting the biceps.", video: "https://www.youtube.com/embed/av7-8mYJp60" },
+                    { name: "Hammer Curls", description: "Similar to dumbbell curls, but with palms facing each other.", video: "https://www.youtube.com/embed/AV-L-W7_4m4" }
+                ]
+            },
+            { 
+                name: "Chest", 
+                image: "https://placehold.co/400x300/2d3748/cbd5e0?text=Chest",
+                exercises: [
+                    { name: "Push-ups", description: "Lower your body to the floor and push back up.", video: "https://www.youtube.com/embed/IODxDxX7oi4" },
+                    { name: "Bench Press", description: "Lie on a bench and press a barbell or dumbbells upwards.", video: "https://www.youtube.com/embed/rT7Dgntw_9M" }
+                ]
+            },
+            { 
+                name: "Shoulders", 
+                image: "https://placehold.co/400x300/2d3748/cbd5e0?text=Shoulders",
+                exercises: [
+                    { name: "Overhead Press", description: "Press a barbell or dumbbells overhead from shoulder level.", video: "https://www.youtube.com/embed/2y-b2_rW-5g" },
+                    { name: "Lateral Raises", description: "Raise dumbbells to the side until your arms are parallel to the floor.", video: "https://www.youtube.com/embed/3VcKaXfPz14" }
+                ]
+            },
+            { 
+                name: "Legs", 
+                image: "https://placehold.co/400x300/2d3748/cbd5e0?text=Legs",
+                exercises: [
+                    { name: "Squats", description: "Lower your hips from a standing position and then stand back up.", video: "https://www.youtube.com/embed/tK-l5m1HwR0" },
+                    { name: "Lunges", description: "Step forward with one leg and lower your hips until both knees are bent at a 90-degree angle.", video: "https://www.youtube.com/embed/Q0O_y2uR3-U" }
+                ]
+            },
+            { name: "Adductor", image: "https://placehold.co/400x300/2d3748/cbd5e0?text=Adductor" },
+            { name: "Abductor", image: "https://placehold.co/400x300/2d3748/cbd5e0?text=Abductor" },
+            { name: "Calves", image: "https://placehold.co/400x300/2d3748/cbd5e0?text=Calves" },
+            { name: "Forearms", image: "https://placehold.co/400x300/2d3748/cbd5e0?text=Forearms" },
+            { name: "Full Body", image: "https://placehold.co/400x300/2d3748/cbd5e0?text=Full+Body" },
+            { name: "Glutes", image: "https://placehold.co/400x300/2d3748/cbd5e0?text=Glutes" },
+            { name: "Hamstrings", image: "https://placehold.co/400x300/2d3748/cbd5e0?text=Hamstrings" },
+            { name: "Hands", image: "https://placehold.co/400x300/2d3748/cbd5e0?text=Hands" },
+            { name: "Lats", image: "https://placehold.co/400x300/2d3748/cbd5e0?text=Lats" },
+            { name: "Lower Back", image: "https://placehold.co/400x300/2d3748/cbd5e0?text=Lower+Back" },
+            { name: "Neck", image: "https://placehold.co/400x300/2d3748/cbd5e0?text=Neck" },
+            { name: "Obliques", image: "https://placehold.co/400x300/2d3748/cbd5e0?text=Obliques" },
+            { name: "Quads", image: "https://placehold.co/400x300/2d3748/cbd5e0?text=Quads" },
+            { name: "Shins", image: "https://placehold.co/400x300/2d3748/cbd5e0?text=Shins" },
+            { name: "Triceps", image: "https://placehold.co/400x300/2d3748/cbd5e0?text=Triceps" },
+            { name: "Upper Back", image: "https://placehold.co/400x300/2d3748/cbd5e0?text=Upper+Back" }
+        ];
+
+        let currentIndex = 0;
+        
+        const carouselView = document.getElementById('carousel-view');
+        const gridView = document.getElementById('grid-view');
+        const exerciseView = document.getElementById('exercise-view');
+        
+        const cardsContainer = document.getElementById('cards-container');
+        const gridContainer = document.getElementById('grid-container');
+        const exerciseList = document.getElementById('exercise-list');
+
+        const mainHeading = document.getElementById('main-heading');
+        const mainSubheading = document.getElementById('main-subheading');
+        
+        const rightArrow = document.getElementById('right-arrow');
+        const leftArrow = document.getElementById('left-arrow');
+        const seeMoreBtn = document.getElementById('see-more-btn');
+        const backBtnGrid = document.getElementById('back-btn-grid');
+        const backBtnExercises = document.getElementById('back-btn-exercises');
+
+        function createCardHtml(data, type) {
+            const size = type === 'exercise' ? 'h-48' : (data.isLarge ? 'h-64' : 'h-48');
+            const textSize = type === 'exercise' ? 'text-lg' : (data.isLarge ? 'text-xl' : 'text-lg');
+            return `
+                <div class="w-full bg-gray-700 rounded-2xl shadow-md p-6 text-center card-hover-effect cursor-pointer" onclick="showExercises('${data.name}')">
+                    <img src="${data.image}" alt="${data.name} Muscle" class="mx-auto ${size} w-auto object-contain">
+                    <h3 class="mt-4 ${textSize} font-semibold text-gray-200">${data.name}</h3>
+                </div>
+            `;
+        }
+
+        function createExerciseCard(exercise) {
+            return `
+                <div class="bg-gray-700 rounded-2xl shadow-md p-6">
+                    <h3 class="text-2xl font-bold text-gray-200">${exercise.name}</h3>
+                    <p class="mt-2 text-gray-400">${exercise.description}</p>
+                    ${exercise.video ? `<div class="mt-4 aspect-w-16 aspect-h-9">
+                        <iframe class="w-full h-full rounded-md" src="${exercise.video}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                    </div>` : ''}
+                </div>
+            `;
+        }
+        
+        function renderCarouselCards() {
+            cardsContainer.innerHTML = '';
+            const numCardsToShow = Math.min(3, muscleGroups.length - currentIndex);
+            for (let i = 0; i < numCardsToShow; i++) {
+                const muscle = muscleGroups[currentIndex + i];
+                cardsContainer.innerHTML += createCardHtml({ ...muscle, isLarge: true }, 'muscle');
+            }
+        }
+
+        function renderGridCards() {
+            gridContainer.innerHTML = '';
+            muscleGroups.forEach(muscle => {
+                gridContainer.innerHTML += createCardHtml({ ...muscle, isLarge: false }, 'muscle');
+            });
+        }
+
+        function showExercises(muscleName) {
+            const muscle = muscleGroups.find(m => m.name === muscleName);
+            if (!muscle || !muscle.exercises) {
+                // If no exercises, just navigate back to the main view
+                toggleView('carousel');
+                return;
+            }
+
+            exerciseList.innerHTML = '';
+            muscle.exercises.forEach(exercise => {
+                exerciseList.innerHTML += createExerciseCard(exercise);
+            });
+
+            mainHeading.innerHTML = `${muscle.name} <span class="text-orange-400">Exercises</span>`;
+            mainSubheading.textContent = `Here are some exercises to target your ${muscle.name.toLowerCase()} muscles.`;
+
+            toggleView('exercise');
+        }
+
+        function toggleView(viewName) {
+            carouselView.classList.add('hidden');
+            gridView.classList.add('hidden');
+            exerciseView.classList.add('hidden');
+
+            if (viewName === 'carousel') {
+                carouselView.classList.remove('hidden');
+                renderCarouselCards();
+                mainHeading.innerHTML = `Exercises By <span class="text-orange-400">Muscle Group</span>`;
+                mainSubheading.textContent = `Explore exercises by muscle group, helping you target each workout effectively, whether you're a novice or a pro.`;
+            } else if (viewName === 'grid') {
+                gridView.classList.remove('hidden');
+                renderGridCards();
+            } else if (viewName === 'exercise') {
+                exerciseView.classList.remove('hidden');
+            }
+        }
+        
+        // This function needs to be global to be called from the `onclick` attribute.
+        window.showExercises = showExercises;
+
+        rightArrow.addEventListener('click', () => {
+            if (currentIndex < muscleGroups.length - 3) {
+                currentIndex++;
+            } else {
+                currentIndex = 0; // Loop back to the beginning
+            }
+            renderCarouselCards();
+        });
+
+        leftArrow.addEventListener('click', () => {
+            if (currentIndex > 0) {
+                currentIndex--;
+            } else {
+                currentIndex = muscleGroups.length - 3; // Loop to the end
+            }
+            renderCarouselCards();
+        });
+
+        seeMoreBtn.addEventListener('click', () => {
+            toggleView('grid');
+        });
+
+        backBtnGrid.addEventListener('click', () => {
+            toggleView('carousel');
+        });
+
+        backBtnExercises.addEventListener('click', () => {
+            // Determine the previous view (carousel or grid)
+            // For simplicity, we can always go back to carousel view
+            toggleView('carousel');
+        });
+
+        // Initial render
+        renderCarouselCards();
+    </script>
+
+</body>
+</html>
