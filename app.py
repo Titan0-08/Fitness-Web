@@ -888,7 +888,6 @@ def create_group():
         members_ref.set({
             "userId": session.get("uid"),
             "userEmail": session.get("email"),
-            "userName": session.get("username", session.get("email")),
             "joinedAt": firestore.SERVER_TIMESTAMP
         })
         
@@ -948,39 +947,12 @@ def join_group(group_id):
         member_ref.set({
             "userId": session.get("uid"),
             "userEmail": session.get("email"),
-            "userName": session.get("username", session.get("email")),
             "joinedAt": firestore.SERVER_TIMESTAMP
         })
         
         return jsonify({"success": True, "message": "Joined group successfully"})
     except Exception as e:
         print(f"❌ Error joining group: {e}")
-        return jsonify({"success": False, "error": str(e)}), 500
-
-@app.route("/api/groups/<group_id>/exit", methods=["POST"])
-@login_required()
-def exit_group(group_id):
-    """Exit a community group"""
-    try:
-        group_ref = db.collection("groups").document(group_id)
-        group_doc = group_ref.get()
-        
-        if not group_doc.exists:
-            return jsonify({"success": False, "error": "Group not found"}), 404
-        
-        # Check if user is a member
-        member_ref = group_ref.collection("members").document(session.get("uid"))
-        member_doc = member_ref.get()
-        
-        if not member_doc.exists:
-            return jsonify({"success": False, "error": "Not a member of this group"}), 400
-        
-        # Remove user from members
-        member_ref.delete()
-        
-        return jsonify({"success": True, "message": "Successfully exited the group"})
-    except Exception as e:
-        print(f"❌ Error exiting group: {e}")
         return jsonify({"success": False, "error": str(e)}), 500
 
 @app.route("/api/groups/<group_id>/messages", methods=["GET"])
@@ -996,25 +968,16 @@ def get_messages(group_id):
             return jsonify({"success": False, "error": "Not a member of this group"}), 403
         
         messages_ref = db.collection("groups").document(group_id).collection("messages")
-        messages = messages_ref.order_by("timestamp", direction=firestore.Query.ASCENDING).limit(100).stream()
+        messages = messages_ref.order_by("timestamp", direction=firestore.Query.DESCENDING).limit(50).stream()
         
         message_list = []
         for message in messages:
             message_data = clean_firestore_data(message.to_dict())
             message_data["id"] = message.id
-            
-            # Ensure user field is properly set
-            if not message_data.get("user") or message_data.get("user") == "User":
-                # Try to get user name from users collection
-                user_id = message_data.get("userId")
-                if user_id:
-                    user_doc = db.collection("users").document(user_id).get()
-                    if user_doc.exists:
-                        user_data = user_doc.to_dict()
-                        message_data["user"] = user_data.get("username") or user_data.get("name") or message_data.get("userEmail", "User")
-            
             message_list.append(message_data)
         
+        # Reverse to show oldest first
+        message_list.reverse()
         return jsonify(message_list)
     except Exception as e:
         print(f"❌ Error fetching messages: {e}")
@@ -1036,40 +999,17 @@ def send_message(group_id):
         if not data or "content" not in data or not data["content"].strip():
             return jsonify({"success": False, "error": "Message content required"}), 400
         
-        # Get user's profile data for consistent naming
-        user_ref = db.collection("users").document(session.get("uid"))
-        user_doc = user_ref.get()
-        
-        if user_doc.exists:
-            user_data = user_doc.to_dict()
-            # Use username if available, otherwise fall back to email
-            user_name = user_data.get("username") or user_data.get("name") or session.get("email")
-        else:
-            # Fallback to session data
-            user_name = session.get("username") or session.get("email")
-        
         # Add the message
         messages_ref = db.collection("groups").document(group_id).collection("messages")
-        message_data = {
-            "user": user_name,
+        messages_ref.add({
+            "user": session.get("email"),
             "userId": session.get("uid"),
-            "userEmail": session.get("email"),
             "content": data["content"].strip(),
             "timestamp": firestore.SERVER_TIMESTAMP,
             "avatar": session.get("avatar", "https://placehold.co/32x32/3b82f6/ffffff?text=U")
-        }
+        })
         
-        # Add the message and get its ID
-        message_ref = messages_ref.add(message_data)
-        
-        # Return the complete message data including the ID
-        message_data["id"] = message_ref[1].id
-        # Convert timestamp for response
-        if hasattr(message_data["timestamp"], 'isoformat'):
-            message_data["timestamp"] = message_data["timestamp"].isoformat()
-        
-        return jsonify({"success": True, "message": "Message sent", "message_data": message_data}), 201
-        
+        return jsonify({"success": True, "message": "Message sent"}), 201
     except Exception as e:
         print(f"❌ Error sending message: {e}")
         return jsonify({"success": False, "error": str(e)}), 500
@@ -1105,6 +1045,7 @@ def get_user_groups():
     except Exception as e:
         print(f"❌ Error fetching user groups: {e}")
         return jsonify({"success": False, "error": str(e)}), 500
+
     
 #-----------------------------------------------------------#
 @app.route("/api/debug/user-data")
