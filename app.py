@@ -996,16 +996,25 @@ def get_messages(group_id):
             return jsonify({"success": False, "error": "Not a member of this group"}), 403
         
         messages_ref = db.collection("groups").document(group_id).collection("messages")
-        messages = messages_ref.order_by("timestamp", direction=firestore.Query.DESCENDING).limit(50).stream()
+        messages = messages_ref.order_by("timestamp", direction=firestore.Query.ASCENDING).limit(100).stream()
         
         message_list = []
         for message in messages:
             message_data = clean_firestore_data(message.to_dict())
             message_data["id"] = message.id
+            
+            # Ensure user field is properly set
+            if not message_data.get("user") or message_data.get("user") == "User":
+                # Try to get user name from users collection
+                user_id = message_data.get("userId")
+                if user_id:
+                    user_doc = db.collection("users").document(user_id).get()
+                    if user_doc.exists:
+                        user_data = user_doc.to_dict()
+                        message_data["user"] = user_data.get("username") or user_data.get("name") or message_data.get("userEmail", "User")
+            
             message_list.append(message_data)
         
-        # Reverse to show oldest first
-        message_list.reverse()
         return jsonify(message_list)
     except Exception as e:
         print(f"❌ Error fetching messages: {e}")
@@ -1027,20 +1036,40 @@ def send_message(group_id):
         if not data or "content" not in data or not data["content"].strip():
             return jsonify({"success": False, "error": "Message content required"}), 400
         
-        # Get user's name for the message
-        user_name = session.get("username", session.get("email"))
+        # Get user's profile data for consistent naming
+        user_ref = db.collection("users").document(session.get("uid"))
+        user_doc = user_ref.get()
+        
+        if user_doc.exists:
+            user_data = user_doc.to_dict()
+            # Use username if available, otherwise fall back to email
+            user_name = user_data.get("username") or user_data.get("name") or session.get("email")
+        else:
+            # Fallback to session data
+            user_name = session.get("username") or session.get("email")
         
         # Add the message
         messages_ref = db.collection("groups").document(group_id).collection("messages")
-        messages_ref.add({
+        message_data = {
             "user": user_name,
             "userId": session.get("uid"),
+            "userEmail": session.get("email"),
             "content": data["content"].strip(),
             "timestamp": firestore.SERVER_TIMESTAMP,
             "avatar": session.get("avatar", "https://placehold.co/32x32/3b82f6/ffffff?text=U")
-        })
+        }
         
-        return jsonify({"success": True, "message": "Message sent"}), 201
+        # Add the message and get its ID
+        message_ref = messages_ref.add(message_data)
+        
+        # Return the complete message data including the ID
+        message_data["id"] = message_ref[1].id
+        # Convert timestamp for response
+        if hasattr(message_data["timestamp"], 'isoformat'):
+            message_data["timestamp"] = message_data["timestamp"].isoformat()
+        
+        return jsonify({"success": True, "message": "Message sent", "message_data": message_data}), 201
+        
     except Exception as e:
         print(f"❌ Error sending message: {e}")
         return jsonify({"success": False, "error": str(e)}), 500
@@ -1218,10 +1247,3 @@ def admin_recipes():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=True)
-
-
-
-
-#git add .
-#git commit -m "Describe what you changed here"
-#git push
