@@ -20,6 +20,7 @@
             background-color: #000;
             color: #fff;
             overflow-x: hidden;
+            height: 100vh;
         }
 
         .icon {
@@ -178,6 +179,7 @@
             display: flex;
             overflow: hidden;
             background: #000;
+            position: relative;
         }
 
         /* Sidebar Styles */
@@ -357,6 +359,8 @@
             flex: 1;
             overflow: hidden;
             background: #000;
+            display: flex;
+            flex-direction: column;
         }
 
         .content-view {
@@ -364,6 +368,9 @@
             overflow-y: auto;
             padding: 1.5rem;
             background: #000;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
         }
 
         .content-view.hidden {
@@ -652,7 +659,7 @@
             line-height: 1.5;
         }
 
-        /* Chat Styles */
+        /* Chat Styles - COMPLETELY REDESIGNED FOR MOBILE */
         .chat-container {
             height: 100%;
             display: flex;
@@ -661,6 +668,7 @@
             border-radius: 0.5rem;
             box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
             border: 1px solid #374151;
+            position: relative;
         }
 
         .chat-header {
@@ -669,6 +677,9 @@
             display: flex;
             align-items: center;
             justify-content: space-between;
+            flex-shrink: 0;
+            background: #111827;
+            z-index: 10;
         }
 
         .chat-header-info {
@@ -677,16 +688,31 @@
             gap: 0.75rem;
         }
 
+        /* FIXED: Chat messages container */
         .chat-messages {
             flex: 1;
             overflow-y: auto;
             padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            /* Critical fix: Add proper padding for mobile */
+            padding-bottom: 80px;
+            position: relative;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
         }
 
         .message {
             display: flex;
             gap: 0.75rem;
             margin-bottom: 1rem;
+            animation: fadeIn 0.3s ease-in;
+            position: relative;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .message-avatar {
@@ -694,10 +720,12 @@
             height: 32px;
             border-radius: 50%;
             object-fit: cover;
+            flex-shrink: 0;
         }
 
         .message-content {
             flex: 1;
+            min-width: 0;
         }
 
         .message-header {
@@ -723,6 +751,7 @@
             border-radius: 0.5rem;
             padding: 0.75rem;
             max-width: 400px;
+            word-wrap: break-word;
         }
 
         .message-text {
@@ -759,13 +788,16 @@
             color: #f43f5e;
         }
 
+        /* FIXED: Chat input positioning */
         .chat-input {
             border-top: 1px solid #374151;
             padding: 1rem;
             background: #111827;
             position: sticky;
             bottom: 0;
-            z-index: 10;
+            z-index: 20;
+            flex-shrink: 0;
+            width: 100%;
         }
 
         .chat-input-row {
@@ -797,6 +829,7 @@
             cursor: pointer;
             color: white;
             font-size: 1.25rem;
+            flex-shrink: 0;
         }
 
         .chat-send-btn:hover {
@@ -864,6 +897,7 @@
             position: sticky;
             top: 0;
             z-index: 40;
+            flex-shrink: 0;
         }
 
         .mobile-back-btn {
@@ -874,7 +908,7 @@
             cursor: pointer;
         }
 
-        /* Mobile responsiveness */
+        /* Mobile responsiveness - COMPLETELY REDONE */
         @media (max-width: 1024px) {
             .sidebar {
                 position: fixed;
@@ -921,17 +955,28 @@
             
             .content-view {
                 padding: 0;
+                height: 100%;
             }
             
             .chat-container {
                 margin: 0;
                 border-radius: 0;
                 border: none;
-                height: 100vh;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                width: 100%;
+                z-index: 100;
             }
             
             .mobile-chat-header {
                 display: flex;
+                flex-shrink: 0;
             }
             
             .chat-header {
@@ -948,25 +993,38 @@
             }
             
             .message-bubble {
-                max-width: 100%;
+                max-width: 85%;
             }
             
             .modal {
                 padding: 1rem;
             }
             
+            /* FIXED: Mobile chat messages container */
             .chat-messages {
-                padding-bottom: 1rem;
-                padding-top: 1rem;
+                flex: 1;
+                overflow-y: auto;
+                padding: 1rem;
+                padding-bottom: 150px; /* Much larger padding for mobile */
+                margin-bottom: 0;
+                -webkit-overflow-scrolling: touch;
+                position: relative;
+                overscroll-behavior: contain;
             }
             
+            /* FIXED: Mobile chat input - no longer fixed, but sticky */
             .chat-input {
                 padding: 0.75rem;
-                position: fixed;
+                position: sticky;
                 bottom: 0;
                 left: 0;
                 right: 0;
                 border-radius: 0;
+                border-top: 1px solid #374151;
+                background: #111827;
+                z-index: 30;
+                box-sizing: border-box;
+                margin-top: auto;
             }
             
             .chat-input-field {
@@ -977,6 +1035,19 @@
             .chat-send-btn {
                 width: 44px;
                 height: 44px;
+            }
+            
+            /* Ensure chat view takes full screen on mobile */
+            #chat-view {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                width: 100%;
+                height: 100%;
+                padding: 0;
+                z-index: 100;
             }
         }
 
@@ -1012,6 +1083,19 @@
             
             .message-bubble {
                 padding: 0.5rem 0.75rem;
+                max-width: 90%;
+            }
+            
+            /* FIXED: Even more padding for very small screens */
+            .chat-messages {
+                padding-bottom: 30px;
+            }
+        }
+
+        /* Special fix for iOS Safari */
+        @supports (-webkit-touch-callout: none) {
+            .chat-messages {
+                height: -webkit-fill-available;
             }
         }
     </style>
@@ -1494,6 +1578,10 @@
         // Show/hide mobile chat header
         if (viewName === 'chat') {
             document.getElementById('mobile-chat-header').classList.remove('hidden');
+            // Ensure chat is scrolled to bottom when opening
+            setTimeout(() => {
+                scrollChatToBottom();
+            }, 300);
         } else {
             document.getElementById('mobile-chat-header').classList.add('hidden');
         }
@@ -1635,10 +1723,37 @@
             `;
         }).join("");
         
-        container.scrollTop = container.scrollHeight;
+        // Add extra spacer at the bottom
+        const spacer = document.createElement('div');
+        spacer.style.height = '20px';
+        spacer.style.flexShrink = '0';
+        container.appendChild(spacer);
+        
+        scrollChatToBottom();
     }
 
-    // Add a single message to chat - NEW FUNCTION
+    // Scroll chat to bottom - IMPROVED FOR MOBILE
+    function scrollChatToBottom() {
+        const container = document.getElementById("chat-messages");
+        if (container) {
+            // Use setTimeout to ensure DOM is updated
+            setTimeout(() => {
+                const scrollHeight = container.scrollHeight;
+                const clientHeight = container.clientHeight;
+                
+                // Calculate the bottom position
+                const bottomPosition = scrollHeight - clientHeight;
+                
+                // Add extra padding for mobile
+                const extraPadding = window.innerWidth <= 768 ? 100 : 20;
+                
+                // Scroll to bottom with padding
+                container.scrollTop = bottomPosition + extraPadding;
+            }, 100);
+        }
+    }
+
+    // Add a single message to chat
     function addMessageToChat(messageData) {
         const container = document.getElementById("chat-messages");
         
@@ -1673,7 +1788,11 @@
         `;
         
         container.appendChild(messageElement);
-        container.scrollTop = container.scrollHeight;
+        
+        // Scroll to the new message
+        setTimeout(() => {
+            scrollChatToBottom();
+        }, 50);
     }
 
     // Format message timestamp
@@ -1700,7 +1819,7 @@
         }
     }
 
-    // Send message - UPDATED VERSION
+    // Send message
     async function sendMessage() {
         const input = document.getElementById("message-input");
         const text = input.value.trim();
@@ -1716,7 +1835,6 @@
                 credentials: 'include',
                 body: JSON.stringify({ 
                     content: text
-                    // Remove the user field - let backend handle it
                 })
             });
 
@@ -1725,12 +1843,17 @@
             if (response.ok && result.success) {
                 input.value = "";
                 
-                // If we have the new message data, add it directly instead of reloading all messages
+                // If we have the new message data, add it directly
                 if (result.message_data) {
                     addMessageToChat(result.message_data);
                 } else {
                     await loadGroupMessages(selectedGroupId); // Fallback: reload messages
                 }
+                
+                // Clear input and focus it again
+                setTimeout(() => {
+                    input.focus();
+                }, 50);
             } else {
                 alert(result.error || 'Error sending message. Please try again.');
             }

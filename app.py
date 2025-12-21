@@ -955,6 +955,34 @@ def join_group(group_id):
         print(f"❌ Error joining group: {e}")
         return jsonify({"success": False, "error": str(e)}), 500
 
+# ------------------- ADDED GROUP EXIT ENDPOINT ------------------- #
+@app.route("/api/groups/<group_id>/exit", methods=["POST"])
+@login_required()
+def exit_group(group_id):
+    """Exit a community group"""
+    try:
+        group_ref = db.collection("groups").document(group_id)
+        group_doc = group_ref.get()
+        
+        if not group_doc.exists:
+            return jsonify({"success": False, "error": "Group not found"}), 404
+        
+        # Check if user is a member
+        member_ref = group_ref.collection("members").document(session.get("uid"))
+        member_doc = member_ref.get()
+        
+        if not member_doc.exists:
+            return jsonify({"success": False, "error": "Not a member of this group"}), 400
+        
+        # Remove user from members
+        member_ref.delete()
+        
+        return jsonify({"success": True, "message": "Successfully exited the group"})
+    except Exception as e:
+        print(f"❌ Error exiting group: {e}")
+        return jsonify({"success": False, "error": str(e)}), 500
+# ---------------------------------------------------------------- #
+
 @app.route("/api/groups/<group_id>/messages", methods=["GET"])
 @login_required()
 def get_messages(group_id):
